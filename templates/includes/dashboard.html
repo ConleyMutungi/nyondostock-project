@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | NyondoStock {% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1">
+            <i class="bi bi-plus-lg"></i> New Report
+        </button>
+    </div>
+</div>
+
+<!-- Analytics Cards Grid -->
+<div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted uppercase text-xs">Total Users</h6>
+                <h2 class="card-title mb-0 fw-bold">1,248</h2>
+                <small class="text-success d-flex align-items-center gap-1 mt-2">
+                    <i class="bi bi-arrow-up-short"></i> +12% this month
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Active Sessions</h6>
+                <h2 class="card-title mb-0 fw-bold">452</h2>
+                <small class="text-danger d-flex align-items-center gap-1 mt-2">
+                    <i class="bi bi-arrow-down-short"></i> -3% last hour
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Conversion Rate</h6>
+                <h2 class="card-title mb-0 fw-bold">4.8%</h2>
+                <small class="text-success d-flex align-items-center gap-1 mt-2">
+                    <i class="bi bi-arrow-up-short"></i> +0.4% today
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Section -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-transparent py-3">
+        <h5 class="card-title mb-0">Recent Activity</h5>
+    </div>
+    <div class="card-body">
+        <p class="card-text">Welcome back, <strong>{{ user.username|default:"Guest" }}</strong>! Your dashboard content displays inside this main content framework while keeping the responsive Bootstrap sidebar fixed to the left.</p>
+    </div>
+</div>
+{% endblock content %}

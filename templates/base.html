@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Django App{% endblock %}</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <!-- Bootstrap Icons CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" integrity="sha384-+eYBq4iYHj+2pJqT3r8VbQ+9VnN1VtM2e5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5" crossorigin="anonymous">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-light">
+   {% block navs %}
+      <div id="nav_menu">
+          {% include 'includes/navs.html'   %}
+      </div>   
+    {% endblock %}
+
+    <div class="d-flex">
+      {% include 'includes/sidebar.html'   %}
+        
+
+        <!-- Dynamic Main Content Wrapper -->
+        <div class="flex-grow-1 p-4 bg-body" style="overflow-y: auto;">
+            {% if messages %}
+                <div class="container-fluid mb-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <main class="container-fluid">
+                {% block content %}
+                <!-- Child views render here -->
+                {% endblock content %}
+            </main>
+        </div>
+    </div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,8 +1,8 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
-class CustomUser(models.AbstractUser):
+class CustomUser(AbstractUser):
     # id = models.AutoField(primary_key=True)
     # username = models.CharField(max_length=255)
     # email = models.EmailField()
@@ -20,13 +20,11 @@ class Customer(models.Model):
     email = models.EmailField()
 
     def __str__(self):
-        return self.name    
+        return self.name
 
-class Staff(models.AbstractUser):
-    id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=255)
-    email = models.EmailField()
-    password = models.CharField(min_length=8)
+class Staff(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='staff_profile')
+    profile_picture = models.ImageField(upload_to='staff_profiles/', blank=True, null=True)
 
-def __str__(self):
-        return self.username
+    def __str__(self):
+        return self.user.username
