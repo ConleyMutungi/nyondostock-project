@@ -10,7 +10,7 @@
             <p>Manage your Suppliers from here</p>
 
         </div>
-        <a href="{%url 'supplier_reg_form'%}">Add Supplier</a>
+        <a href="{% url 'supplier_reg_form' supplier.id%}">Add Supplier</a>
     </div>
 
     <div class="card shadow-sm"></div>

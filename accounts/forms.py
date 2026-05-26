@@ -1,29 +1,7 @@
 from django import forms 
-# from .models import CustomUser, Customer, Staff
 from django.contrib.auth.forms import UserCreationForm
-# from django.contrib.auth.models import User
 from accounts.models import CustomUser
-# from nyondo.finance.models import CustomerProfile, CreditTransaction
 
-# class CustomUserForm(forms.ModelForm):
-#     class Meta:
-#         model = CustomUser
-#         fields = "__all__"
-#         # error_messages = {
-#         #     'category_name': {
-#         #         'required':'Please fill the category name'
-#         #     },
-#         #     'description': {
-#         #         'required':'Description is required'
-#         #     }
-#         # }
-
-#     def clean_user_name(self):
-#         user_name = self.cleaned_data.get('user_name')  # either use .get or [] and type inside
-#         if len(user_name) > 10:
-#             raise forms.ValidationError('User name should not be more than 10 characters')
-        
-#         return user_name
 
 class CustomUserCreationForm(UserCreationForm):
     password1 = forms.CharField(
@@ -39,7 +17,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password1', 'password2', 'is_customer', 'is_staff_member']
+        fields = ['username', 'email', 'password1', 'password2', 'is_staff_member']
         error_messages = {
             'username': {
                 'required': 'Please enter a username.',

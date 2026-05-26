@@ -1,11 +1,10 @@
-{% extends 'base.html' %}
 <!-- Sidebar Start -->
         <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark min-vh-100" style="width: 280px;">
             
             <!-- Brand / Logo Link -->
             <a href="{% url 'dashboard' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none gap-2">
                 <i class="bi bi-bootstrap-fill fs-4 text-primary"></i>
-                <span class="fs-4 fw-semibold">Nyondo Stock</span>
+                <span class="fs-4 fw-semibold">Go to Dashboard</span>
             </a>
             
             <hr class="border-secondary">
@@ -14,56 +13,56 @@
             <ul class="nav nav-pills flex-column mb-auto gap-1">
                 <!-- Core Module -->
                 <li class="nav-item">
-                    <a href="{% url 'dashboard.html' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %} d-flex align-items-center gap-2">
+                    <a href="{% url 'credit_dashboard' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'credit_dashboard' %}active{% endif %} d-flex align-items-center gap-2">
                         <i class="bi bi-house-door"></i>
-                        <span>Dashboard</span>
+                        <span>Credit Dashboard</span>
                     </a>
                 </li>
 
                 <!-- Future Page Link 1: Analytics / Reports -->
                 <li>
-                    <a href="{% url 'analytics_page' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'analytics_page' %}active{% endif %} d-flex align-items-center gap-2">
+                    <a href="{% url 'sales_list' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'sales_list' %}active{% endif %} d-flex align-items-center gap-2">
                         <i class="bi bi-bar-chart"></i>
-                        <span>Analytics</span>
+                        <span>Sales</span>
                     </a>
                 </li>
 
                 <!-- Future Page Link 2: User Profiles / Management -->
                 <li>
-                    <a href="{% url 'profiles_page' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'profiles_page' %}active{% endif %} d-flex align-items-center gap-2">
+                    <a href="{% url 'supplier_list' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'supplier_list' %}active{% endif %} d-flex align-items-center gap-2">
                         <i class="bi bi-people"></i>
-                        <span>Profiles</span>
+                        <span>Suppliers</span>
                     </a>
                 </li>
 
                 <!-- Future Page Link 3: Projects / Management Tasks -->
                 <li>
-                    <a href="{% url 'projects_page' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'projects_page' %}active{% endif %} d-flex align-items-center gap-2">
+                    <a href="{% url 'stock_list' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'stock_list' %}active{% endif %} d-flex align-items-center gap-2">
                         <i class="bi bi-folder2"></i>
-                        <span>Projects</span>
+                        <span>Stock</span>
                     </a>
                 </li>
 
                 <!-- Future Page Link 4: Notifications / Inbox -->
-                <li>
-                    <a href="{% url 'notifications_page' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'notifications_page' %}active{% endif %} d-flex align-items-center gap-2">
+                <!-- <li>
+                    <a href="#" class="nav-link text-white {% if request.resolver_match.url_name == 'notifications_page' %}active{% endif %} d-flex align-items-center gap-2">
                         <i class="bi bi-bell"></i>
                         <span>Notifications</span>
                     </a>
                 </li>
 
                 <!-- Future Page Link 5: Global Configurations / Settings -->
-                <li>
-                    <a href="{% url 'settings_page' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'settings_page' %}active{% endif %} d-flex align-items-center gap-2">
+                <!-- <li>
+                    <a href="#" class="nav-link text-white {% if request.resolver_match.url_name == 'settings_page' %}active{% endif %} d-flex align-items-center gap-2">
                         <i class="bi bi-gear"></i>
                         <span>Settings</span>
                     </a>
-                </li>
+                </li> --> 
             </ul>
             
             <hr class="border-secondary">
 
-            <!-- User Profile Dropdown -->
+            <!-- User Profile Dropdown
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                     {% if user.profile.image %}
@@ -74,18 +73,18 @@
                     <strong>{{ user.username|default:"Guest" }}</strong>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow border-0" aria-labelledby="dropdownUser">
-                    <li><a class="dropdown-item" href="{% url 'user_profile_detail' %}">My Profile</a></li>
-                    <li><a class="dropdown-item" href="{% url 'account_settings' %}">Account Settings</a></li>
+                    <li><a class="dropdown-item" href="#">My Profile</a></li>
+                    <li><a class="dropdown-item" href="#">Account Settings</a></li>
                     <li><hr class="dropdown-divider border-secondary"></li>
-                    <li>
+                    <li> -->
                         <!-- Safe Django POST submission layout for secure logout action -->
                         <form method="post" action="{% url 'logout' %}" class="d-inline">
                             {% csrf_token %}
                             <button type="submit" class="dropdown-item text-danger">Sign out</button>
                         </form>
-                    </li>
-                </ul>
-            </div>
+                    <!-- </li> -->
+                <!-- </ul> -->
+            <!-- </div> -->
 
         </div>
         <!-- Sidebar End -->

@@ -19,8 +19,8 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('stock.urls')),
-    path('finance/', include('finance.urls')),
+    path('stock/', include('stock.urls')),
+    path('', include('finance.urls')),
     path('users/', include('django.contrib.auth.urls')), # For built-in auth views like login/logout
     path('users/', include('accounts.urls')),
 ]

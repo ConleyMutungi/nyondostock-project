@@ -62,7 +62,7 @@ ROOT_URLCONF = 'nyondo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,10 +127,13 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
     ]
 
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5' #I added this
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/users/login/'
-LOGIN_REDIRECT_URL = '/sales_list/'
+LOGIN_REDIRECT_URL = '/sales/'

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import UserRegistrationForm
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -13,3 +14,10 @@ def register_user(request):
     else:
         form = UserRegistrationForm()
     return render(request,'registration/registration.html', {'form':form})
+
+@login_required
+def dashboard(request):
+    if request.user.is_staff:
+        return redirect('staff_dashboard')  # Redirect staff to their dashboard
+    context = {} 
+    return render(request, 'includes/dashboard.html', context)

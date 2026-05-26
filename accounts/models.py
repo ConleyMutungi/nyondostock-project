@@ -3,11 +3,7 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
 class CustomUser(AbstractUser):
-    # id = models.AutoField(primary_key=True)
-    # username = models.CharField(max_length=255)
-    # email = models.EmailField()
-    # password = models.CharField(min_length=8)
-    is_customer = models.BooleanField(default=True)
+    # is_customer = models.BooleanField(default=True)
     is_staff_member = models.BooleanField(default=False)
 
     def __str__(self):

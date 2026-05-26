@@ -1,15 +1,15 @@
 from django.shortcuts import redirect, render
 from django.db.models import Sum
 
-from stock.models import Stock
-from .models import Sale, Expense, CustomerProfile, CreditTransaction
+# from stock.models import Stock
+from .models import Sale, CustomerProfile, CreditTransaction
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView
 from django.db import transaction
 # from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
-from .models import CustomerProfile, CreditTransaction
+from .models import CustomerProfile, CreditTransaction, Expense
 from django.contrib.auth.decorators import login_required
 from .models import CustomerProfile
 from .forms import SaleForm
@@ -36,12 +36,12 @@ def financial_dashboard(request):
 
         #ai recommended I add Project Business Pages from Customers
 class StaffDashboardView(UserPassesTestMixin, ListView):
-        model = Sale
-        template_name = 'finance/dashboard.html'   #Check this and research it
+    model = Sale
+    template_name = 'finance/dashboard.html'   #Check this and research it
 
     #This test determines whether the user is allowed on this page
-def test_func(self):
-        return self.request.user_is.authenticated and self.request.user.is_staf_member
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user.is_staff_member
 
 
 def process_credit_purchase(user, total_cost, order_details=""):
@@ -100,23 +100,23 @@ def sales_reg_form(request):
         # name = request.POST.get('web_name')
         form = SaleForm(request.POST)
         if form.is_valid():
+            quantity_sold = form.cleaned_data['quantity_sold']
             stock = form.cleaned_data['stock']
-            if stock.quantity < form.cleaned_data['quantity_sold']:
+            if stock.quantity < quantity_sold:
                 form.add_error('quantity_sold', 'Not enough stock available.')
             else:
                 form.save()
-                return redirect('sales_reg_form')
-            if  stock.quantity >= quantity_sold:
-                stock.quantity -= models.F('quantity') - quantity_sold #or quantity_sold
+                stock.quantity -= quantity_sold
                 stock.save()
+                return redirect('sales_reg_form')
     else:
         form = SaleForm()
     context = {
         'form' : form
     }
-    return render(request, 'sales_reg_form.html', {'form':form})
+    return render(request, 'store/sales_reg_form.html', {'form':form})
 
 @login_required
 def sales_list(request):
     sales = Sale.objects.all()
-    return render (request, 'sales_list.html', {'sales':sales})
+    return render (request, 'store/sales_list.html', {'sales':sales})

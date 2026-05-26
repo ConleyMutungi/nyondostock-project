@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 {% block title %}
-    Tasks
+    Stock List
 {% endblock %}
 
 {% block content %}
     <div>
         <div class="d-flex justify-content-between align-items">
-            <h1 class="page-title">Tasks</h1>
-            <p>Manage your task from here</p>
+            <h1 class="page-title">Stock</h1>
+            <p>Manage your stock from here</p>
 
         </div>
-        <a href="{%url 'web_form'%}">Add Task</a>
+        <a href="{% url 'stock_reg_form' %}">Add Stock</a>
     </div>
 
     <div class="card shadow-sm"></div>
@@ -19,7 +19,7 @@
             <div class="border-bottom py-5">
                 <div class="d-flex justify-content-between align-items">
                     <div>
-                        <h5>{{stock.name}}</h5>
+                        <h5>{{ stock.name }}</h5>
                         <p>{{ stock.quantity }}</p>
                         <p>{{ stock.date }}</p>
                         <p>{{ stock.total_cost }}</p>

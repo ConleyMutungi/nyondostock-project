@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Logged Out
+{% endblock %}
+
+{% block content %}
+    <div>
+        <div>
+            <h2 class="card-body card-body d-flex flex-column align-items-center py-8">You have been logged out</h2>
+            <a href="{% url 'login' %}" class="btn btn-warning py-8 align-items-center">Login</a>
+        </div>
+    </div>
+{% endblock %}
