@@ -7,11 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView
 from django.db import transaction
-from django.shortcuts import get_object_or_404
+# from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from .models import CustomerProfile, CreditTransaction
 from django.contrib.auth.decorators import login_required
-from nyondo.finance.models import CustomerProfile
+from .models import CustomerProfile
 from .forms import SaleForm
 
 

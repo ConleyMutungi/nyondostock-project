@@ -2,8 +2,8 @@ from django import forms
 # from .models import CustomUser, Customer, Staff
 from django.contrib.auth.forms import UserCreationForm
 # from django.contrib.auth.models import User
-from nyondo.accounts.models import CustomUser
-from nyondo.finance.models import CustomerProfile, CreditTransaction
+from accounts.models import CustomUser
+# from nyondo.finance.models import CustomerProfile, CreditTransaction
 
 # class CustomUserForm(forms.ModelForm):
 #     class Meta:
@@ -26,11 +26,20 @@ from nyondo.finance.models import CustomerProfile, CreditTransaction
 #         return user_name
 
 class CustomUserCreationForm(UserCreationForm):
+    password1 = forms.CharField(
+        label='Password',
+        min_length=8,
+        widget=forms.PasswordInput(attrs={"class": "form-control"})
+    )
+    password2 = forms.CharField(
+        label='Confirm Password',
+        min_length=8,
+        widget=forms.PasswordInput(attrs={"class": "form-control"})
+    )
+
     class Meta:
         model = CustomUser
-        fields = [
-            ('username', 'email', 'password1', 'password2', 'is_customer', 'is_staff_member')
-        ]
+        fields = ['username', 'email', 'password1', 'password2', 'is_customer', 'is_staff_member']
         error_messages = {
             'username': {
                 'required': 'Please enter a username.',
@@ -49,15 +58,7 @@ class CustomUserCreationForm(UserCreationForm):
                 'min_length': 'Password must be at least 8 characters long.'
             }
         }
-        password1 = forms.CharField(
-            label='Password',
-            widget=forms.PasswordInput,
-            min_length=8,
-            widget=forms.PasswordInput(attrs={"class": "form-control"})
-        )
-        password2 = forms.CharField(
-            label='Confirm Password',
-            widget=forms.PasswordInput,
-            min_length=8,
-            widget=forms.PasswordInput(attrs={"class": "form-control"})
-        )
+
+
+# Provide legacy name expected by views
+UserRegistrationForm = CustomUserCreationForm

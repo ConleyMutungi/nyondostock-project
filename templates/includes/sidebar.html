@@ -5,7 +5,7 @@
             <!-- Brand / Logo Link -->
             <a href="{% url 'dashboard' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none gap-2">
                 <i class="bi bi-bootstrap-fill fs-4 text-primary"></i>
-                <span class="fs-4 fw-semibold">Django App</span>
+                <span class="fs-4 fw-semibold">Nyondo Stock</span>
             </a>
             
             <hr class="border-secondary">
@@ -14,7 +14,7 @@
             <ul class="nav nav-pills flex-column mb-auto gap-1">
                 <!-- Core Module -->
                 <li class="nav-item">
-                    <a href="{% url 'dashboard' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %} d-flex align-items-center gap-2">
+                    <a href="{% url 'dashboard.html' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %} d-flex align-items-center gap-2">
                         <i class="bi bi-house-door"></i>
                         <span>Dashboard</span>
                     </a>

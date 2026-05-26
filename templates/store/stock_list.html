@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}
+    Tasks
+{% endblock %}
+
+{% block content %}
+    <div>
+        <div class="d-flex justify-content-between align-items">
+            <h1 class="page-title">Tasks</h1>
+            <p>Manage your task from here</p>
+
+        </div>
+        <a href="{%url 'web_form'%}">Add Task</a>
+    </div>
+
+    <div class="card shadow-sm"></div>
+    <div class="card-body">
+        {% for stock in stocks %}
+            <div class="border-bottom py-5">
+                <div class="d-flex justify-content-between align-items">
+                    <div>
+                        <h5>{{stock.name}}</h5>
+                        <p>{{ stock.quantity }}</p>
+                        <p>{{ stock.date }}</p>
+                        <p>{{ stock.total_cost }}</p>
+                        <p>{{ stock.is_on_credit }}</p>
+                        <p>{{ stock.is_paid }}</p>
+                        <p>{{ stock.low_stock_threshold }}</p>
+                    </div>
+                </div>
+                
+            </div>
+            {% empty %}
+            <div class="text-center">
+                <p class="mb-3">No stock available</p>
+            </div>
+            
+        {% endfor %}
+    </div>
+    
+{% endblock %}

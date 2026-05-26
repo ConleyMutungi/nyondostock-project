@@ -41,4 +41,9 @@ def stock_reg_form(request):
 
 def stock_list(request):
     stock = Stock.objects.all()
-    return render (request, 'store/stock_list.html', {'stock':stock})   
+    return render (request, 'store/stock_list.html', {'stock':stock})
+
+def delete_supplier(request,pk):
+    supplier = get_object_or_404(Supplier,pk=pk)
+    supplier.delete()
+    return redirect('supplier_list')       
