@@ -21,10 +21,10 @@
     <div class="col">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-muted uppercase text-xs">Total Users</h6>
-                <h2 class="card-title mb-0 fw-bold">1,248</h2>
+                <h6 class="card-subtitle mb-2 text-muted uppercase text-xs">Total Revenue</h6>
+                <h2 class="card-title mb-0 fw-bold">KSH {{ total_sales|floatformat:2 }}</h2>
                 <small class="text-success d-flex align-items-center gap-1 mt-2">
-                    <i class="bi bi-arrow-up-short"></i> +12% this month
+                    <i class="bi bi-arrow-up-short"></i> Revenue from all sales
                 </small>
             </div>
         </div>
@@ -32,10 +32,10 @@
     <div class="col">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-muted">Active Sessions</h6>
-                <h2 class="card-title mb-0 fw-bold">452</h2>
+                <h6 class="card-subtitle mb-2 text-muted">Total Expenses</h6>
+                <h2 class="card-title mb-0 fw-bold">KSH {{ total_expenses|floatformat:2 }}</h2>
                 <small class="text-danger d-flex align-items-center gap-1 mt-2">
-                    <i class="bi bi-arrow-down-short"></i> -3% last hour
+                    <i class="bi bi-arrow-down-short"></i> Expenses from finance records
                 </small>
             </div>
         </div>
@@ -43,10 +43,10 @@
     <div class="col">
         <div class="card h-100 shadow-sm">
             <div class="card-body">
-                <h6 class="card-subtitle mb-2 text-muted">Conversion Rate</h6>
-                <h2 class="card-title mb-0 fw-bold">4.8%</h2>
+                <h6 class="card-subtitle mb-2 text-muted">Net Profit</h6>
+                <h2 class="card-title mb-0 fw-bold">KSH {{ net_profit|floatformat:2 }}</h2>
                 <small class="text-success d-flex align-items-center gap-1 mt-2">
-                    <i class="bi bi-arrow-up-short"></i> +0.4% today
+                    <i class="bi bi-arrow-up-short"></i> Revenue minus expenses
                 </small>
             </div>
         </div>

@@ -13,8 +13,7 @@ class Stock(models.Model):
       ('wire mesh', 'Wire Mesh'),
     ]
      
-    # id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, choices=STOCK_CHOICES)
+    name = models.CharField(max_length=25, choices=STOCK_CHOICES)
     quantity = models.IntegerField()
     date = models.DateTimeField(auto_now_add=True)
     total_cost = models.DecimalField(max_digits=20, decimal_places=2)

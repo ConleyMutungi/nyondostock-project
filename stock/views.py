@@ -12,7 +12,7 @@ def supplier_reg_form(request):
         form = SupplierForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('supplier_reg_form')
+            return redirect('supplier_registration_form')
         
     else:
         form = SupplierForm()
@@ -22,15 +22,15 @@ def supplier_reg_form(request):
     return render(request,'store/supplier_reg_form.html', {'form':form})    
 
 def supplier_list(request):
-    supplier = Supplier.objects.all()
-    return render (request, 'store/supplier_list.html', {'supplier':supplier})
+    suppliers = Supplier.objects.all()
+    return render(request, 'store/supplier_list.html', {'suppliers': suppliers})
 
 def stock_reg_form(request):
     if request.method == 'POST':
         form = StockForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('stock_reg_form')
+            return redirect('stock_registration_form')
         
     else:
         form = StockForm()
@@ -40,8 +40,8 @@ def stock_reg_form(request):
     return render(request,'store/stock_reg_form.html', {'form':form}) 
 
 def stock_list(request):
-    stock = Stock.objects.all()
-    return render (request, 'store/stock_list.html', {'stock':stock})
+    stocks = Stock.objects.all()
+    return render(request, 'store/stock_list.html', {'stocks': stocks})
 
 def delete_supplier(request,pk):
     supplier = get_object_or_404(Supplier,pk=pk)

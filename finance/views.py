@@ -1,6 +1,5 @@
 from django.shortcuts import redirect, render
 from django.db.models import Sum
-
 # from stock.models import Stock
 from .models import Sale, CustomerProfile, CreditTransaction
 from django.contrib.auth.decorators import login_required
@@ -32,7 +31,7 @@ def financial_dashboard(request):
         'total_expenses': total_expenses,
         'net_profit': net_profit,
     }
-    return render(request, 'finance/dashboard.html', context) # First create dashboard.html
+    return render(request, 'includes/dashboard.html', context)
 
         #ai recommended I add Project Business Pages from Customers
 class StaffDashboardView(UserPassesTestMixin, ListView):
@@ -80,7 +79,7 @@ def reload_customer_credit(user, deposit_amount, reference=""):
             description=f"Deposit made. Ref: {reference}"
         )
 
-#@login_required
+@login_required
 def credit_dashboard(request):
     # Automatically creates a profile if it doesn't exist yet (signals can also do this)
     profile, created = CustomerProfile.objects.get_or_create(user=request.user)

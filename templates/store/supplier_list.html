@@ -10,7 +10,7 @@
             <p>Manage your Suppliers from here</p>
 
         </div>
-        <a href="{% url 'supplier_reg_form' supplier.id%}">Add Supplier</a>
+        <a href="{% url 'supplier_registration_form' %}">Add Supplier</a>
     </div>
 
     <div class="card shadow-sm"></div>
@@ -27,7 +27,7 @@
                         <p>{{ supplier.stock_supplied }}</p>
                     </div>
                 </div>
-                <!-- <a href="{%url 'edit_task' task.id%}" class="btn btn-sm btn-danger">Edit</a> -->
+                
                 <a href="{%url 'delete_supplier' supplier.id%}" class="btn btn-sm btn-danger"> Delete </a>
             </div>
             {% empty %}
