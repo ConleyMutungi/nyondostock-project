@@ -4,38 +4,100 @@
 {% endblock %}
 
 {% block content %}
-    <div>
-        <div class="d-flex justify-content-between align-items">
-            <h1 class="page-title">Suppliers</h1>
-            <p>Manage your Suppliers from here</p>
-
+<div class="container my-4">
+    <!-- Header Section -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom pb-3 mb-4">
+        <div>
+            <h1 class="h2 text-dark mb-1">Supplier Management</h1>
+            <p class="text-muted mb-md-0">Manage corporate vendors, track supplier contacts, and view incoming inventory origins.</p>
         </div>
-        <a href="{% url 'supplier_registration_form' %}">Add Supplier</a>
+        <div>
+            <a href="{% url 'supplier_registration_form' %}" class="btn btn-dark d-inline-flex align-items-center">
+                <i class="bi bi-person-plus me-2"></i>Add New Supplier
+            </a>
+        </div>
     </div>
 
-    <div class="card shadow-sm"></div>
-    <div class="card-body">
-        {% for supplier in suppliers %}
-            <div class="border-bottom py-5">
-                <div class="d-flex justify-content-between align-items">
-                    <div>
-                        <h5>{{supplier.name}}</h5>
-                        <p>{{ supplier.contact_info }}</p>
-                        <p>{{ supplier.Address }}</p>
-                        <p>{{ supplier.email }}</p>
-                        <p>{{ supplier.nin }}</p>
-                        <p>{{ supplier.stock_supplied }}</p>
-                    </div>
-                </div>
-                
-                <a href="{%url 'delete_supplier' supplier.id%}" class="btn btn-sm btn-danger"> Delete </a>
+    <!-- Main Content Card -->
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase fs-7 text-muted">
+                        <tr>
+                            <th class="ps-4 py-3" style="width: 25%;">Supplier Details</th>
+                            <th class="py-3" style="width: 25%;">Contact & Communication</th>
+                            <th class="py-3">Business Address</th>
+                            <th class="py-3">Stock Supplied</th>
+                            <th class="pe-4 py-3 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for supplier in suppliers %}
+                            <tr>
+                                <!-- Supplier Profile Name & Identification -->
+                                <td class="ps-4 py-3">
+                                    <span class="fw-semibold text-dark d-block fs-6 mb-1">{{ supplier.name }}</span>
+                                    {% if supplier.nin %}
+                                        <span class="text-muted small d-block">
+                                            <strong class="text-uppercase">NIN:</strong> {{ supplier.nin }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Contact Info & Email -->
+                                <td class="py-3">
+                                    <span class="text-dark d-block mb-1"><i class="bi bi-telephone text-muted me-1"></i>{{ supplier.contact_info }}</span>
+                                    <span class="text-muted small d-block"><i class="bi bi-envelope text-muted me-1"></i>{{ supplier.email }}</span>
+                                </td>
+                                
+                                <!-- Physical Address -->
+                                <td class="py-3 text-secondary fs-7">
+                                    <i class="bi bi-geo-alt text-muted me-1"></i>{{ supplier.Address }}
+                                </td>
+                                
+                                <!-- Stock Product Category Info -->
+                                <td class="py-3">
+                                    <span class="badge bg-info-subtle text-info-dark border border-info-subtle px-2 py-1.5 rounded">
+                                        {{ supplier.stock_supplied|default:"None assigned" }}
+                                    </span>
+                                </td>
+
+                                <!-- Action Buttons (Includes Your Delete View Link) -->
+                                <td class="pe-4 py-3 text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <!-- Placeholder Edit link, update name when ready -->
+                                        <a href="#" class="btn btn-outline-secondary" title="Edit Vendor Profile">Edit</a>
+                                        
+                                        <!-- Active Dangerous Action Link directly from your snippet -->
+                                        <a href="{% url 'delete_supplier' supplier.id %}" 
+                                           class="btn btn-outline-danger" 
+                                           onclick="return confirm('Are you sure you want to permanently remove this supplier?');"
+                                           title="Delete Supplier Profile">
+                                            Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <!-- Empty State -->
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="text-muted mb-3">
+                                        <i class="bi bi-building display-4 text-secondary opacity-50 d-block mb-3"></i>
+                                        <h5 class="text-dark">No suppliers registered</h5>
+                                        <p class="small text-muted">Vendor distribution accounts will display here once added.</p>
+                                    </div>
+                                    <a href="{% url 'supplier_registration_form' %}" class="btn btn-sm btn-dark">
+                                        Add First Supplier
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            {% empty %}
-            <div class="text-center">
-                <p class="mb-3">No suppliers available</p>
-            </div>
-            
-        {% endfor %}
+        </div>
     </div>
-    
+</div>
 {% endblock %}

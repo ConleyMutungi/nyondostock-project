@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from django.db.models import Sum
+from django.db.models import Q, Sum
 # from stock.models import Stock
 from .models import Sale, CustomerProfile, CreditTransaction
 from django.contrib.auth.decorators import login_required
@@ -9,8 +9,6 @@ from django.db import transaction
 # from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from .models import CustomerProfile, CreditTransaction, Expense
-from django.contrib.auth.decorators import login_required
-from .models import CustomerProfile
 from .forms import SaleForm
 
 
@@ -86,10 +84,20 @@ def credit_dashboard(request):
     
     # Get the history, newest first
     transactions = profile.transactions.all().order_by('-created_at')
-    
+
+    totals = profile.transactions.aggregate(
+        total_reloads=Sum('amount', filter=Q(transaction_type='RELOAD')),
+        total_purchases=Sum('amount', filter=Q(transaction_type='PURCHASE')),
+        total_refunds=Sum('amount', filter=Q(transaction_type='REFUND')),
+    )
+
     context = {
         'profile': profile,
-        'transactions': transactions
+        'transactions': transactions,
+        'current_balance': profile.credit_balance,
+        'total_reloads': totals['total_reloads'] or 0,
+        'total_purchases': totals['total_purchases'] or 0,
+        'total_refunds': totals['total_refunds'] or 0,
     }
     return render(request, 'store/credit_dashboard.html', context)
 

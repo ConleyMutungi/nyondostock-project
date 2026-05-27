@@ -4,35 +4,85 @@
 {% endblock %}
 
 {% block content %}
-    <div>
-        <div class="d-flex justify-content-between align-items">
-            <h1 class="page-title">Sales</h1>
-            <p>Manage your sales from here</p>
-
+<div class="container my-4">
+    <!-- Header Section -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom pb-3 mb-4">
+        <div>
+            <h1 class="h2 text-dark mb-1">Sales Management</h1>
+            <p class="text-muted mb-md-0">Track revenues, analyze order logs, and process daily transactions from here.</p>
         </div>
-        <a href="{%url 'sales_reg_form'%}">Add Sale</a>
+        <div>
+            <a href="{% url 'sales_reg_form' %}" class="btn btn-success d-inline-flex align-items-center">
+                <i class="bi bi-cart-plus me-2"></i>Record New Sale
+            </a>
+        </div>
     </div>
 
-    <div class="card shadow-sm"></div>
-    <div class="card-body">
-        {% for sale in sales %}
-            <div class="border-bottom py-5">
-                <div class="d-flex justify-content-between align-items">
-                    <div>
-                        <h5>{{ sale.stock }}</h5>
-                        <p>{{ sale.quantity_sold }}</p>
-                        <p>{{ sale.total_revenue }}</p>
-                        <p>{{ sale.date }}</p>
-                    </div>
-                </div>
-            
-            
-            {% empty %}
-            <div class="text-center">
-                <p class="mb-3">No sales available</p>
+    <!-- Main Content Card -->
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase fs-7 text-muted">
+                        <tr>
+                            <th class="ps-4 py-3" style="width: 35%;">Stock Item</th>
+                            <th class="py-3">Quantity Sold</th>
+                            <th class="py-3">Total Revenue</th>
+                            <th class="py-3">Date Processed</th>
+                            <th class="pe-4 py-3 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales %}
+                            <tr>
+                                <!-- Stock Item Name -->
+                                <td class="ps-4 py-3">
+                                    <span class="fw-semibold text-dark d-block">{{ sale.stock }}</span>
+                                </td>
+                                
+                                <!-- Quantity Sold -->
+                                <td class="py-3">
+                                    <span class="fs-5 fw-bold text-secondary">{{ sale.quantity_sold }}</span> units
+                                </td>
+                                
+                                <!-- Total Revenue -->
+                                <td class="py-3">
+                                    <span class="fw-bold text-success">{{ sale.total_revenue }}</span>
+                                </td>
+                                
+                                <!-- Date -->
+                                <td class="py-3 text-muted fs-7">
+                                    {{ sale.date|date:"M d, Y" }} <span class="text-black-50 small">{{ sale.date|time:"H:i" }}</span>
+                                </td>
+
+                                <!-- Action Buttons -->
+                                <td class="pe-4 py-3 text-end">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <!-- Replace these hashtags with your actual receipt/refund/edit endpoints when ready -->
+                                        <a href="#" class="btn btn-outline-secondary" title="View Receipt">Receipt</a>
+                                        <a href="#" class="btn btn-outline-danger" title="Cancel/Refund Sale">Refund</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <!-- Empty State -->
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="text-muted mb-3">
+                                        <i class="bi bi-currency-exchange display-4 text-secondary opacity-50 d-block mb-3"></i>
+                                        <h5 class="text-dark">No sales records available</h5>
+                                        <p class="small text-muted">Completed transactions will display inside this transaction journal.</p>
+                                    </div>
+                                    <a href="{% url 'sales_reg_form' %}" class="btn btn-sm btn-success">
+                                        Record First Sale
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            
-        {% endfor %}
+        </div>
     </div>
-    
+</div>
 {% endblock %}
