@@ -1,12 +1,26 @@
 {% extends 'base.html' %}
+{% load humanize %}
 {% load crispy_forms_tags %}
 {% block title %} Sales Registration {% endblock %}
 {% block content %}
-    <form method="POST">
-
-        {% csrf_token %}
-        {{ form |crispy }}
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
-
+<div class="container my-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="h5 mb-3">Record a Sale</h3>
+            {% if selected_stock %}
+                <div class="alert alert-info mb-4">
+                    Selling <strong>{{ selected_stock.name }}</strong> at UGX {{ selected_stock.unit_price|floatformat:2|intcomma }} per unit.
+                </div>
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                {{ form |crispy }}
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Save Sale</button>
+                    <a href="{% url 'sales_list' %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock content %}

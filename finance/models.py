@@ -10,6 +10,14 @@ from stock.models import Stock
 
 # Create your models here.
 class Sale(models.Model):
+    staff = models.ForeignKey(
+        Staff,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='sales',
+        db_column='customer_id'
+    )
     customer_name = models.CharField(max_length=255, null=True, blank=True)
     stock = models.ForeignKey(Stock, on_delete=models.SET_NULL, null=True)
     quantity_sold = models.IntegerField()
@@ -23,6 +31,15 @@ class Sale(models.Model):
     def __str__(self):
         stock_name = self.stock.name if self.stock else 'Unknown'
         return f"Sale: {stock_name} - {self.quantity_sold}"
+
+    def save(self, *args, **kwargs):
+        if self.stock is not None:
+            self.unit_price = self.stock.unit_price
+        super().save(*args, **kwargs)
+
+    @property
+    def total_revenue(self):
+        return (self.unit_price or Decimal('0.00')) * Decimal(self.quantity_sold or 0)
 
 class Expense(models.Model):
     price = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))

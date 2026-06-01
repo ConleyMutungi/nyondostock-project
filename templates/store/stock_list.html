@@ -32,6 +32,7 @@
                             <th class="ps-4 py-3" style="width: 30%;">Item Name</th>
                             <th class="py-3">Quantity Available</th>
                             <th class="py-3">Unit Price</th>
+                            <th class="py-3">Potential Revenue</th>
                             <th class="py-3">Total Cost</th>
                             <th class="py-3">Payment Status</th>
                             <th class="py-3">Date Added</th>
@@ -58,6 +59,9 @@
                                 </td>
                                 <td class="py-3">
                                     <span class="fw-bold text-dark">{{ stock.unit_price|floatformat:0|intcomma }}</span>
+                                </td>
+                                <td class="py-3 fw-medium text-success">
+                                    {{ stock.potential_revenue|floatformat:0|intcomma }}
                                 </td>
                                 
                                 <!-- Total Cost -->
@@ -87,6 +91,7 @@
                                         <!-- Replace these dummy URLs with your actual detail/edit endpoints when ready -->
                                         <a href="{% url 'stock_detail' stock.id %}" class="btn btn-outline-secondary" title="View details">View</a>
                                         <a href="{% url 'stock_edit' stock.id %}" class="btn btn-outline-primary" title="Edit item">Edit</a>
+                                        <a href="{% url 'stock_restock' stock.id %}" class="btn btn-outline-success" title="Restock item">Restock</a>
                                         <a href="{% url 'stock_delete' stock.id %}" class="btn btn-outline-danger" title="Delete item" onclick="return confirm('Are you sure you want to permanently remove this stock?');">Delete</a>
                                     </div>
                                 </td>

@@ -11,7 +11,7 @@ ROLE_CHOICES = [
 
 class CustomUser(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='customer')
-    is_staff_member = models.BooleanField(default=False)
+    # is_staff_member = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"

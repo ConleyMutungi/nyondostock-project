@@ -29,6 +29,11 @@ class Stock(models.Model):
     is_paid = models.BooleanField(default=False)
     low_stock_threshold = models.IntegerField(default=5)
     unit_price = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
+    is_deleted = models.BooleanField(default=False)
+    
+    # Managers
+    objects = StockManager()  # Default manager - excludes deleted
+    all_objects = models.Manager()  # Get all, including deleted
     
     def save(self, *args, **kwargs):
         if self.unit_cost is None:
@@ -46,6 +51,10 @@ class Stock(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.quantity} left)"
+
+    @property
+    def potential_revenue(self):
+        return (self.unit_price or Decimal('0.00')) * Decimal(self.quantity or 0)
 
     # image = models.ImageField(upload_to='stock/')
 

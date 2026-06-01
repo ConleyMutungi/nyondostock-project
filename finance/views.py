@@ -1,7 +1,8 @@
 from decimal import Decimal, InvalidOperation
 
 from django.shortcuts import redirect, render
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, F, Value, ExpressionWrapper, DecimalField, Max
+from django.db.models.functions import Coalesce
 from stock.models import Stock
 from .models import Sale, CustomerProfile, CreditTransaction, Expense, PendingCreditOrder
 from django.contrib.auth.decorators import login_required
@@ -11,6 +12,8 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
 from .forms import SaleForm, ExpenseForm
+from django.contrib import messages
+from django.views.decorators.http import require_POST
 
 CURRENCY_CODE = 'UGX'
 
@@ -22,7 +25,11 @@ def get_credit_profile(user):
 # Create your views here.
 @login_required
 def financial_dashboard(request):
-    total_sales = Sale.objects.aggregate(Sum('unit_price'))['unit_price__sum'] or Decimal('0.00')
+    revenue_expression = ExpressionWrapper(
+        F('quantity_sold') * Coalesce(F('unit_price'), Value(0)),
+        output_field=DecimalField(max_digits=20, decimal_places=2)
+    )
+    total_sales = Sale.objects.aggregate(total_revenue=Sum(revenue_expression))['total_revenue'] or Decimal('0.00')
     expense_totals = Expense.objects.aggregate(
         total_price=Sum('price'),
         total_transport=Sum('transport_cost'),
@@ -245,8 +252,18 @@ def credit_members_list(request):
 
 
 def sales_reg_form(request):
+    selected_stock = None
+    initial = {}
+
+    stock_id = request.GET.get('stock')
+    if stock_id:
+        try:
+            selected_stock = Stock.objects.get(pk=int(stock_id))
+            initial['stock'] = selected_stock
+        except (Stock.DoesNotExist, ValueError):
+            selected_stock = None
+
     if request.method == 'POST':
-        # name = request.POST.get('web_name')
         form = SaleForm(request.POST)
         if form.is_valid():
             quantity_sold = form.cleaned_data['quantity_sold']
@@ -254,23 +271,65 @@ def sales_reg_form(request):
             if stock.quantity < quantity_sold:
                 form.add_error('quantity_sold', 'Not enough stock available.')
             else:
-                form.save()
+                sale = form.save(commit=False)
+                sale.staff = getattr(request.user, 'staff_profile', None)
+                sale.unit_price = stock.unit_price or Decimal('0.00')
+                sale.save()
                 stock.quantity -= quantity_sold
                 stock.save()
-                return redirect('sales_reg_form')
+                return redirect('sales_list')
     else:
-        form = SaleForm()
-    context = {
-        'form' : form
-    }
-    return render(request, 'store/sales_reg_form.html', {'form':form})
+        form = SaleForm(initial=initial)
+
+    return render(request, 'store/sales_reg_form.html', {
+        'form': form,
+        'selected_stock': selected_stock,
+    })
 
 @login_required
 def sales_list(request):
     sales = Sale.objects.all()
-    return render (request, 'store/sales_list.html', {'sales':sales})
+    return render(request, 'store/sales_list.html', {'sales':sales})
+
+@login_required
+def sales_by_stock_report(request):
+    revenue_expression = ExpressionWrapper(
+        F('quantity_sold') * Coalesce(F('unit_price'), Value(0)),
+        output_field=DecimalField(max_digits=20, decimal_places=2)
+    )
+    report = (
+        Sale.objects
+            .filter(stock__isnull=False)
+            .values('stock__id', 'stock__name')
+            .annotate(
+                total_quantity=Sum('quantity_sold'),
+                total_revenue=Sum(revenue_expression),
+                last_sold=Max('date'),
+                current_stock=Max('stock__quantity'),
+            )
+            .order_by('-total_revenue')
+    )
+
+    return render(request, 'store/sales_by_stock_report.html', {
+        'report': report,
+    })
 
 def generate_receipt(request,pk):
     sale = get_object_or_404(Sale, pk=pk)
     
+    return render(request, 'store/receipt.html', {'sale': sale})    
     return render(request, 'store/receipt.html', {'sale': sale})
+
+@require_POST
+def sale_delete(request, pk):
+    """Delete a sale record and restore stock quantity"""
+    sale = get_object_or_404(Sale, pk=pk)
+    
+    if sale.stock:
+        # Restore stock quantity
+        sale.stock.quantity += sale.quantity_sold
+        sale.stock.save()
+    
+    sale.delete()
+    messages.success(request, "Sale has been deleted and stock restored.")
+    return redirect('sales_list')

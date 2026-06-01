@@ -4,7 +4,7 @@ from .models import Sale, Expense
 class SaleForm(forms.ModelForm):
     class Meta:
         model = Sale
-        fields = "__all__"
+        fields = ['customer_name', 'stock', 'quantity_sold']
 
 class ExpenseForm(forms.ModelForm):
     class Meta:

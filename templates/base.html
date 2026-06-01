@@ -22,9 +22,9 @@
         }
     </style>
     <div class="d-flex">
-        
-      {% include 'includes/sidebar.html'   %}
-        
+        {% if request.resolver_match and request.resolver_match.url_name not in ['login', 'logout', 'generate_receipt'] %}
+            {% include 'includes/sidebar.html' %}
+        {% endif %}
 
         <!-- Dynamic Main Content Wrapper -->
         <div class="flex-grow-1 p-4 bg-body" style="overflow-y: auto;">

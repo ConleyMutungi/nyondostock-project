@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Receipt #{{ sale.receipt_number }}{% endblock %}
+{% block title %}Receipt #{{ sale.id }}{% endblock %}
 
 {% block content %}
 <style>
@@ -41,8 +41,8 @@
                     <h4 class="text-uppercase fw-normal text-secondary mb-1">CASH RECEIPT</h4>
                     <span class="badge bg-success text-success bg-opacity-10 border border-success border-opacity-25 mb-2">Transaction Approved</span>
                     <ul class="list-unstyled small text-muted mb-0">
-                        <li><strong>Receipt No:</strong> <span class="text-dark fw-medium">#{{ sale.receipt_number }}</span></li>
-                        <li><strong>Date:</strong> {{ sale.date_issued|date:"M d, Y" }} {{ sale.date_issued|time:"H:i" }}</li>
+                        <li><strong>Receipt No:</strong> <span class="text-dark fw-medium">#{{ sale.id }}</span></li>
+                        <li><strong>Date:</strong> {{ sale.date|date:"M d, Y" }}</li>
                     </ul>
                 </div>
             </div>
@@ -51,11 +51,19 @@
             <div class="row mb-4 bg-light p-3 rounded mx-0">
                 <div class="col-6 small">
                     <span class="text-muted text-uppercase d-block mb-1">Billed To</span>
-                    <strong class="text-dark">{{ sale.customer_name }}</strong>
+                    <strong class="text-dark">
+                        {{ sale.customer_name|default:'Walk-in Customer' }}
+                    </strong>
                 </div>
                 <div class="col-6 text-end small">
                     <span class="text-muted text-uppercase d-block mb-1">Served By</span>
-                    
+                    <strong class="text-dark">
+                        {% if sale.staff and sale.staff.user %}
+                            {{ sale.staff.user.get_full_name|default:sale.staff.user.username }}
+                        {% else %}
+                            Not recorded
+                        {% endif %}
+                    </strong>
                 </div>
             </div>
 
@@ -71,23 +79,20 @@
                         </tr>
                     </thead>
                     <tbody class="small">
-                        {% for item in items %}
-                            <tr>
-                                <td>
-                                    <span class="fw-semibold text-dark d-block">{{ item.product.name }}</span>
-                                    <span class="text-muted small">Code: {{ item.product.sku }}</span>
-                                </td>
-                                <td class="text-center fw-medium text-secondary">
-                                    {{ item.quantity|floatformat:"-2" }}
-                                </td>
-                                <td class="text-end text-muted">
-                                    <span class="small text-secondary me-1">UGX</span>{{ item.unit_price|floatformat:"2" }}
-                                </td>
-                                <td class="text-end fw-semibold text-dark">
-                                    <span class="small text-secondary me-1">UGX</span>{{ item.subtotal|floatformat:"2" }}
-                                </td>
-                            </tr>
-                        {% endfor %}
+                        <tr>
+                            <td>
+                                <span class="fw-semibold text-dark d-block">{{ sale.stock.name }}</span>
+                            </td>
+                            <td class="text-center fw-medium text-secondary">
+                                {{ sale.quantity_sold }}
+                            </td>
+                            <td class="text-end text-muted">
+                                <span class="small text-secondary me-1">UGX</span>{{ sale.unit_price|floatformat:"2" }}
+                            </td>
+                            <td class="text-end fw-semibold text-dark">
+                                <span class="small text-secondary me-1">UGX</span>{{ sale.total_revenue|floatformat:"2" }}
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -99,12 +104,12 @@
                         <tbody>
                             <tr>
                                 <td class="text-muted">Payment Mode:</td>
-                                <td class="text-end fw-medium text-dark">{{ sale.payment_method }}</td>
+                                <td class="text-end fw-medium text-dark">Cash</td>
                             </tr>
                             <tr class="border-top">
                                 <td class="fs-6 fw-bold text-dark pt-2">Amount Paid:</td>
                                 <td class="fs-5 fw-bold text-success text-end pt-2">
-                                    <span class="fs-6 fw-normal text-secondary me-1">UGX</span>{{ sale.total_amount|floatformat:"2" }}
+                                    <span class="fs-6 fw-normal text-secondary me-1">UGX</span>{{ sale.total_revenue|floatformat:"2" }}
                                 </td>
                             </tr>
                         </tbody>

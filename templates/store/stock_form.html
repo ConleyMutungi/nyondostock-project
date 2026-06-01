@@ -1,28 +1,46 @@
 {% extends 'base.html' %}
-{% load humanize %}
+{% load crispy_forms_tags static %}
 
 {% block title %}Edit Stock{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid px-4 py-4">
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-header bg-white py-3">
-            <h3 class="mb-0">Edit Stock</h3>
-        </div>
+<div class="container my-4">
+    <div class="card shadow-sm">
         <div class="card-body">
-            <p class="text-muted">This page is a placeholder for stock editing. Implement the stock edit form here.</p>
-            <dl class="row">
-                <dt class="col-sm-3">Item Name</dt>
-                <dd class="col-sm-9">{{ stock.name }}</dd>
-                <dt class="col-sm-3">Quantity</dt>
-                <dd class="col-sm-9">{{ stock.quantity }}</dd>
-                <dt class="col-sm-3">Unit Cost</dt>
-                <dd class="col-sm-9">UGX {{ stock.unit_cost|floatformat:2|intcomma }}</dd>
-                <dt class="col-sm-3">Unit Price</dt>
-                <dd class="col-sm-9">UGX {{ stock.unit_price|floatformat:2|intcomma }}</dd>
-            </dl>
-            <a href="{% url 'stock_list' %}" class="btn btn-secondary">Back to Stock List</a>
+            <h3 class="h5 mb-3">Edit Stock Item</h3>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form | crispy }}
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="{% url 'stock_detail' stock.id %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityField = document.getElementById('id_quantity');
+    const unitCostField = document.getElementById('id_unit_cost');
+    const totalCostField = document.getElementById('id_total_cost');
+
+    function updateTotalCost() {
+        const quantity = parseFloat(quantityField?.value) || 0;
+        const unitCost = parseFloat(unitCostField?.value) || 0;
+        if (totalCostField) {
+            totalCostField.value = (quantity * unitCost).toFixed(2);
+        }
+    }
+
+    quantityField?.addEventListener('input', updateTotalCost);
+    unitCostField?.addEventListener('input', updateTotalCost);
+    updateTotalCost();
+});
+</script>
 {% endblock %}

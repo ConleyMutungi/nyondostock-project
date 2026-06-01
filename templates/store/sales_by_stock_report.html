@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Sales by Stock Report{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Sales by Stock Report</h1>
+            <p class="text-muted mb-0">See total units sold and revenue generated for each item.</p>
+        </div>
+        <a href="{% url 'sales_list' %}" class="btn btn-outline-secondary">Back to Sales Log</a>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase fs-7 text-muted">
+                        <tr>
+                            <th class="ps-4 py-3">Stock Item</th>
+                            <th class="py-3">Current Stock</th>
+                            <th class="py-3">Units Sold</th>
+                            <th class="py-3">Total Revenue</th>
+                            <th class="py-3">Last Sold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report %}
+                            <tr>
+                                <td class="ps-4 py-3">
+                                    <a href="{% url 'stock_detail' row.stock__id %}" class="text-decoration-none text-dark">
+                                        {{ row.stock__name }}
+                                    </a>
+                                </td>
+                                <td class="py-3">{{ row.current_stock|default:0 }}</td>
+                                <td class="py-3">{{ row.total_quantity|default:0 }}</td>
+                                <td class="py-3 text-success">UGX {{ row.total_revenue|floatformat:2|intcomma }}</td>
+                                <td class="py-3 text-muted">{{ row.last_sold|date:"M d, Y" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <h5 class="mb-2">No sales data available yet.</h5>
+                                        <p class="mb-0">Record sales to start generating stock-level performance metrics.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

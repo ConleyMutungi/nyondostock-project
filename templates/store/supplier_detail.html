@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Supplier Detail{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-white py-3">
+            <h3 class="mb-0">Supplier Details</h3>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Name</dt>
+                <dd class="col-sm-9">{{ supplier.name }}</dd>
+
+                <dt class="col-sm-3">Contact</dt>
+                <dd class="col-sm-9">{{ supplier.contact_info }}</dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">{{ supplier.email }}</dd>
+
+                <dt class="col-sm-3">NIN</dt>
+                <dd class="col-sm-9">{{ supplier.nin }}</dd>
+
+                <dt class="col-sm-3">Stock Supplied</dt>
+                <dd class="col-sm-9">
+                    {% if stock_item %}
+                        <a href="{% url 'stock_detail' stock_item.id %}">{{ stock_item.name }} ({{ stock_item.quantity }})</a>
+                    {% else %}
+                        <span class="text-muted">Not linked to a stock item</span>
+                    {% endif %}
+                </dd>
+            </dl>
+
+            <a href="{% url 'supplier_list' %}" class="btn btn-secondary">Back to Suppliers</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

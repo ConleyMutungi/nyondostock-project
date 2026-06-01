@@ -25,6 +25,11 @@
                     UGX {{ stock.unit_price|floatformat:2|intcomma }}
                 </dd>
 
+                <dt class="col-sm-3">Potential Revenue</dt>
+                <dd class="col-sm-9">
+                    UGX {{ stock.potential_revenue|floatformat:2|intcomma }}
+                </dd>
+
                 <dt class="col-sm-3">Total Cost</dt>
                 <dd class="col-sm-9">
                     UGX {{ stock.total_cost|floatformat:2|intcomma }}
@@ -32,30 +37,49 @@
 
                 <dt class="col-sm-3">Status</dt>
                 <dd class="col-sm-9">
-                    {% if stock.is_deleted %} Archived {% elif stock.is_paid %} Paid {%
-                    elif stock.is_on_credit %} On credit {% else %} Unpaid {% endif %}
+                    {% if stock.is_deleted %}
+                        Archived
+                    {% elif stock.is_paid %}
+                        Paid
+                    {% elif stock.is_on_credit %}
+                        On credit
+                    {% else %}
+                        Unpaid
+                    {% endif %}
+                </dd>
+
+                <dt class="col-sm-3">Suppliers</dt>
+                <dd class="col-sm-9">
+                    {% if suppliers %}
+                        <ul class="mb-0">
+                        {% for sup in suppliers %}
+                            <li><a href="{% url 'supplier_detail' sup.id %}">{{ sup.name }}</a> — {{ sup.contact_info }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="text-muted">No suppliers recorded for this stock.</span>
+                    {% endif %}
                 </dd>
             </dl>
             <a href="{% url 'stock_list' %}" class="btn btn-secondary">Back to Stock List</a>
             <a href="{% url 'stock_edit' stock.id %}" class="btn btn-primary ms-2">Edit Stock</a>
-            <a href="{% url 'stock_delete' stock.id %}" class="btn btn-outline-danger" onclick="
-            return confirm(
-              'Are you sure you want to permanently remove this stock?',
-            );
-          " title="Delete Stock">
-                    Delete
-                </a>
-                        {% if user.is_authenticated %}
-                        <form method="post" action="{% url 'process_credit_purchase' %}" class="d-inline ms-2">
+            <a href="{% url 'stock_restock' stock.id %}" class="btn btn-success ms-2">Restock</a>
+            <a href="{% url 'sales_reg_form' %}?stock={{ stock.id }}" class="btn btn-success ms-2">Sell Stock</a>
+                        <form method="post" action="{% url 'stock_delete' stock.id %}" class="d-inline ms-2" onsubmit="return confirm('Are you sure you want to delete this stock?');">
                                 {% csrf_token %}
-                                <input type="hidden" name="stock_id" value="{{ stock.id }}">
-                                <div class="input-group buy-credit-input">
-                                    <input type="number" name="quantity" min="1" value="1" class="form-control form-control-sm" required>
-                                    <button class="btn btn-sm btn-outline-primary" type="submit">Buy on Credit</button>
-                                </div>
-                                <div class="small text-muted mt-2">Buying on credit will reserve stock when paid. Pending orders shown in dashboard.</div>
+                                <button type="submit" class="btn btn-outline-danger">Delete</button>
                         </form>
-                        {% endif %}
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'process_credit_purchase' %}" class="d-inline ms-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="stock_id" value="{{ stock.id }}">
+                    <div class="input-group buy-credit-input">
+                        <input type="number" name="quantity" min="1" value="1" class="form-control form-control-sm" required>
+                        <button class="btn btn-sm btn-outline-primary" type="submit">Buy on Credit</button>
+                    </div>
+                    <div class="small text-muted mt-2">Buying on credit will reserve stock when paid. Pending orders shown in dashboard.</div>
+            </form>
+            {% endif %}
         </div>
         
         </td>

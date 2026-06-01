@@ -29,6 +29,12 @@
                 <span class="fw-medium">Sales</span>
             </a>
         </li>
+        <li>
+            <a href="{% url 'sales_by_stock_report' %}" class="nav-link py-2.5 px-3 text-white {% if request.resolver_match.url_name == 'sales_by_stock_report' %}active bg-primary{% else %}hover-opacity{% endif %} d-flex align-items-center gap-3">
+                <i class="bi bi-file-earmark-bar-graph fs-5"></i>
+                <span class="fw-medium">Sales by Stock</span>
+            </a>
+        </li>
 
         <!-- Suppliers Module -->
         <li>
