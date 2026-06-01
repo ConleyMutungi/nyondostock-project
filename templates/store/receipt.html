@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 {% block title %}Receipt #{{ sale.id }}{% endblock %}
 
 {% block content %}
@@ -87,10 +88,10 @@
                                 {{ sale.quantity_sold }}
                             </td>
                             <td class="text-end text-muted">
-                                <span class="small text-secondary me-1">UGX</span>{{ sale.unit_price|floatformat:"2" }}
+                                <span class="small text-secondary me-1">UGX</span>{{ sale.unit_price|floatformat:0|intcomma }}
                             </td>
                             <td class="text-end fw-semibold text-dark">
-                                <span class="small text-secondary me-1">UGX</span>{{ sale.total_revenue|floatformat:"2" }}
+                                <span class="small text-secondary me-1">UGX</span>{{ sale.total_revenue|floatformat:0|intcomma }}
                             </td>
                         </tr>
                     </tbody>
@@ -106,10 +107,20 @@
                                 <td class="text-muted">Payment Mode:</td>
                                 <td class="text-end fw-medium text-dark">Cash</td>
                             </tr>
+                            <tr>
+                                <td class="text-muted">Delivery Distance:</td>
+                                <td class="text-end fw-medium text-dark">{{ sale.delivery_distance|floatformat:2 }} km</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Delivery Fee:</td>
+                                <td class="text-end fw-medium text-dark">
+                                    <span class="small text-secondary me-1">UGX</span>{{ sale.delivery_fee|floatformat:"2"|intcomma }}
+                                </td>
+                            </tr>
                             <tr class="border-top">
                                 <td class="fs-6 fw-bold text-dark pt-2">Amount Paid:</td>
                                 <td class="fs-5 fw-bold text-success text-end pt-2">
-                                    <span class="fs-6 fw-normal text-secondary me-1">UGX</span>{{ sale.total_revenue|floatformat:"2" }}
+                                    <span class="fs-6 fw-normal text-secondary me-1">UGX</span>{{ sale.total_amount_due|floatformat:"2"|intcomma }}
                                 </td>
                             </tr>
                         </tbody>

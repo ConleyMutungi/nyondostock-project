@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 {% endblock %}
 {% block content %}
+{% if profile %}
 <h2>Credit Dashboard for {{ profile.user.username }}</h2>
 <div class="mb-3">
     <div class="credit-balance d-flex justify-content-between align-items-center">
@@ -17,6 +18,11 @@
         </div>
     </div>
 </div>
+{% else %}
+<div class="alert alert-info" role="alert">
+    You do not yet have a credit profile. <a href="{% url 'join_credit_scheme' %}">Join the credit scheme</a> to start using this dashboard.
+</div>
+{% endif %}
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
@@ -79,16 +85,14 @@
                 <div class="card-body p-4 bg-white border-top">
                     <h4 class="h6">Pending Orders</h4>
                     <ul class="list-group">
-                        {% for order in profile.pending_orders.all|dictsortreversed:'created_at' %}
-                            {% if not order.is_completed %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        {{ order.stock.name }} x{{ order.quantity }} — {{ currency_code }} {{ order.total_cost|floatformat:2|intcomma }}
-                                        <div class="small text-muted">Placed {{ order.created_at|timesince }} ago</div>
-                                    </div>
-                                    <span class="badge bg-warning text-dark">Pending</span>
-                                </li>
-                            {% endif %}
+                        {% for order in pending_orders %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    {{ order.stock.name }} x{{ order.quantity }} — {{ currency_code }} {{ order.total_cost|floatformat:2|intcomma }}
+                                    <div class="small text-muted">Placed {{ order.created_at|timesince }} ago</div>
+                                </div>
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            </li>
                         {% empty %}
                             <li class="list-group-item text-muted">No pending credit orders.</li>
                         {% endfor %}

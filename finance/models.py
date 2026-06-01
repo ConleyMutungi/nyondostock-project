@@ -21,12 +21,12 @@ class Sale(models.Model):
     customer_name = models.CharField(max_length=255, null=True, blank=True)
     stock = models.ForeignKey(Stock, on_delete=models.SET_NULL, null=True)
     quantity_sold = models.IntegerField()
-    # total_revenue = models.DecimalField(max_digits=10, decimal_places=2)
+    delivery_distance = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal('0.00'), null=True, blank=True)
+    delivery_fee = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
     date = models.DateField(auto_now_add=True)
     unit_price = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
     # Recorded_By = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True, blank=True)
     # supplied_by = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True)
-
 
     def __str__(self):
         stock_name = self.stock.name if self.stock else 'Unknown'
@@ -35,11 +35,33 @@ class Sale(models.Model):
     def save(self, *args, **kwargs):
         if self.stock is not None:
             self.unit_price = self.stock.unit_price
+        self.delivery_fee = self.calculate_delivery_fee(self.delivery_distance)
         super().save(*args, **kwargs)
+
+    @staticmethod
+    def calculate_delivery_fee(distance):
+        try:
+            distance = float(distance or 0)
+        except (TypeError, ValueError):
+            return Decimal('0.00')
+
+        if distance <= 2:
+            return Decimal('0.00')
+        if distance <= 8:
+            return Decimal('5000.00')
+        if distance <= 18:
+            return Decimal('10000.00')
+        if distance <= 25:
+            return Decimal('15000.00')
+        return Decimal('30000.00')
 
     @property
     def total_revenue(self):
         return (self.unit_price or Decimal('0.00')) * Decimal(self.quantity_sold or 0)
+
+    @property
+    def total_amount_due(self):
+        return self.total_revenue + (self.delivery_fee or Decimal('0.00'))
 
 class Expense(models.Model):
     price = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
@@ -99,3 +121,20 @@ class PendingCreditOrder(models.Model):
         user = self.profile.user.username if self.profile and self.profile.user else 'Unknown'
         stock_name = self.stock.name if self.stock else 'Unknown'
         return f"PendingOrder: {user} -> {stock_name} x{self.quantity} ({self.total_cost})"
+
+
+class Delivery(models.Model):
+    sale = models.OneToOneField('Sale', on_delete=models.CASCADE, related_name='delivery')
+    distance = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal('0.00'))
+    fee = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('SCHEDULED', 'Scheduled'),
+        ('DELIVERED', 'Delivered'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        sale_id = self.sale.pk if self.sale else 'N/A'
+        return f"Delivery for Sale #{sale_id} - {self.status}"

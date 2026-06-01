@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from django.db.models import Q, Sum, F, Value, ExpressionWrapper, DecimalField, Max
 from django.db.models.functions import Coalesce
 from stock.models import Stock
-from .models import Sale, CustomerProfile, CreditTransaction, Expense, PendingCreditOrder
+from .models import Sale, CustomerProfile, CreditTransaction, Expense, PendingCreditOrder, Delivery
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView
@@ -203,6 +203,7 @@ def join_credit_scheme(request):
 def credit_dashboard(request):
     profile = get_credit_profile(request.user)
     transactions = []
+    pending_orders = []
     totals = {
         'total_reloads': 0,
         'total_purchases': 0,
@@ -211,6 +212,7 @@ def credit_dashboard(request):
 
     if profile is not None:
         transactions = profile.transactions.all().order_by('-created_at')
+        pending_orders = profile.pending_orders.filter(is_completed=False).order_by('-created_at')
         totals = profile.transactions.aggregate(
             total_reloads=Sum('amount', filter=Q(transaction_type='RELOAD')),
             total_purchases=Sum('amount', filter=Q(transaction_type='PURCHASE')),
@@ -220,6 +222,7 @@ def credit_dashboard(request):
     context = {
         'profile': profile,
         'transactions': transactions,
+        'pending_orders': pending_orders,
         'current_balance': profile.credit_balance if profile else Decimal('0.00'),
         'total_reloads': totals['total_reloads'] or 0,
         'total_purchases': totals['total_purchases'] or 0,
@@ -275,6 +278,20 @@ def sales_reg_form(request):
                 sale.staff = getattr(request.user, 'staff_profile', None)
                 sale.unit_price = stock.unit_price or Decimal('0.00')
                 sale.save()
+                # create a delivery record if distance provided
+                try:
+                    if (sale.delivery_distance or Decimal('0.00')) > Decimal('0.00'):
+                        # avoid duplicate deliveries
+                        if not hasattr(sale, 'delivery'):
+                            Delivery.objects.create(
+                                sale=sale,
+                                distance=sale.delivery_distance,
+                                fee=sale.delivery_fee,
+                                status='PENDING'
+                            )
+                except Exception:
+                    # Don't block sale creation on delivery record errors
+                    pass
                 stock.quantity -= quantity_sold
                 stock.save()
                 return redirect('sales_list')

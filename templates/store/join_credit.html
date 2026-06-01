@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Join Credit Scheme | NyondoStock{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h1 class="h4 mb-0">Join the Credit Scheme</h1>
+                </div>
+                <div class="card-body">
+                    <p class="mb-4">Create your customer credit profile so you can deposit funds and place credit purchases.</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Create Credit Profile</button>
+                        <a href="{% url 'credit_dashboard' %}" class="btn btn-outline-secondary ms-2">Back to Dashboard</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

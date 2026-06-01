@@ -22,7 +22,7 @@
         }
     </style>
     <div class="d-flex">
-        {% if request.resolver_match and request.resolver_match.url_name not in ['login', 'logout', 'generate_receipt'] %}
+        {% if request.resolver_match and request.resolver_match.url_name not in 'login logout generate_receipt' %}
             {% include 'includes/sidebar.html' %}
         {% endif %}
 
@@ -49,5 +49,11 @@
 
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <footer class="footer mt-auto py-3 bg-light border-top">
+        <div class="container text-center">
+            <span class="text-muted">&copy; {% now "Y" %} Nyondostock. Building Bonds. All rights reserved. </span>
+        </div>
+    </footer>
+
 </body>
 </html>

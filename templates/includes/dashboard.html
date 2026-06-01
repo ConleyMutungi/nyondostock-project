@@ -22,7 +22,7 @@
         <div class="card h-100 shadow-sm">
             <div class="card-body">
                 <h6 class="card-subtitle mb-2 text-muted uppercase text-xs">Total Revenue</h6>
-                <h2 class="card-title mb-0 fw-bold">KSH {{ total_sales|floatformat:0 |intcomma }}</h2>
+                <h2 class="card-title mb-0 fw-bold">UGX {{ total_sales|floatformat:0 |intcomma }}</h2>
                 <small class="text-success d-flex align-items-center gap-1 mt-2">
                     <i class="bi bi-arrow-up-short"></i> Revenue from all sales
                 </small>
@@ -33,7 +33,7 @@
         <div class="card h-100 shadow-sm">
             <div class="card-body">
                 <h6 class="card-subtitle mb-2 text-muted">Total Expenses</h6>
-                <h2 class="card-title mb-0 fw-bold">KSH {{ total_expenses|floatformat:0 |intcomma }}</h2>
+                <h2 class="card-title mb-0 fw-bold">UGX {{ total_expenses|floatformat:0 |intcomma }}</h2>
                 <small class="text-danger d-flex align-items-center gap-1 mt-2">
                     <i class="bi bi-arrow-down-short"></i> Expenses from finance records
                 </small>
@@ -44,7 +44,7 @@
         <div class="card h-100 shadow-sm">
             <div class="card-body">
                 <h6 class="card-subtitle mb-2 text-muted">Net Profit</h6>
-                <h2 class="card-title mb-0 fw-bold">KSH {{ net_profit|floatformat:0 |intcomma }}</h2>
+                <h2 class="card-title mb-0 fw-bold">UGX {{ net_profit|floatformat:0 |intcomma }}</h2>
                 <small class="text-success d-flex align-items-center gap-1 mt-2">
                     <i class="bi bi-arrow-up-short"></i> Revenue minus expenses
                 </small>
@@ -59,7 +59,10 @@
         <h5 class="card-title mb-0">Recent Activity</h5>
     </div>
     <div class="card-body">
-        <p class="card-text">Welcome back, <strong>{{ user.username|default:"Guest" }}</strong>! Your dashboard content displays inside this main content framework while keeping the responsive Bootstrap sidebar fixed to the left.</p>
+        <p class="card-text">Welcome back, <strong>{{ user.username|default:"Guest" }}</strong>! This is the Nyondo Dashboard.</p>
+        <p class="card-text">Here you can get a quick overview of your store's performance, track sales and expenses, and manage your inventory.</p>
+        <p class="card-text">Nyondo Stock - Building Bonds</p>
+
     </div>
 </div>
 {% endblock content %}

@@ -28,7 +28,7 @@
                         <tr>
                             <th class="ps-4 py-3" style="width: 35%;">Stock Item</th>
                             <th class="py-3">Quantity Sold</th>
-                            <th class="py-3">Total Revenue</th>
+                            <th class="py-3">Total Paid</th>
                             <th class="py-3">Date Processed</th>
                             <th class="pe-4 py-3 text-end">Actions</th>
                         </tr>
@@ -38,7 +38,9 @@
                             <tr>
                                 <!-- Stock Item Name -->
                                 <td class="ps-4 py-3">
-                                    <span class="fw-semibold text-dark d-block">{{ sale.stock }}</span>
+                                    <a href="{% url 'generate_receipt' pk=sale.pk %}" class="text-decoration-none">
+                                        <span class="fw-semibold text-dark d-block">{{ sale.stock }}</span>
+                                    </a>
                                 </td>
                                 
                                 <!-- Quantity Sold -->
@@ -46,9 +48,9 @@
                                     <span class="fs-5 fw-bold text-secondary">{{ sale.quantity_sold }}</span> units
                                 </td>
                                 
-                                <!-- Total Revenue -->
+                                <!-- Total Paid -->
                                 <td class="py-3">
-                                    <span class="fw-bold text-success">UGX {{ sale.total_revenue|floatformat:2|intcomma }}</span>
+                                    <span class="fw-bold text-success">UGX {{ sale.total_amount_due|floatformat:2|intcomma }}</span>
                                 </td>
                                 
                                 <!-- Date -->
@@ -59,7 +61,7 @@
                                 <!-- Action Buttons -->
                                 <td class="pe-4 py-3 text-end">
                                     <div class="btn-group btn-group-sm" role="group">
-                                        <a href="{% url 'generate_receipt' pk=sale.pk %}" class="btn btn-outline-secondary" title="View Receipt">Receipt</a>
+                                        <a href="{% url 'generate_receipt' pk=sale.pk %}" class="btn btn-outline-secondary" title="View Sale Receipt">Details</a>
                                         <form method="post" action="{% url 'sale_delete' pk=sale.pk %}" class="m-0">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to delete this sale?');">Delete</button>
