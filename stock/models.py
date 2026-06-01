@@ -1,7 +1,14 @@
+from decimal import Decimal
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 
+class StockManager(models.Manager):
+    # """Custom manager to automatically filter out soft-deleted items."""
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+    
 class Stock(models.Model):
     STOCK_CHOICES = [
       ('hammers', 'Hammers'),
@@ -16,15 +23,32 @@ class Stock(models.Model):
     name = models.CharField(max_length=25, choices=STOCK_CHOICES)
     quantity = models.IntegerField()
     date = models.DateTimeField(auto_now_add=True)
+    unit_cost = models.DecimalField(max_digits=20, decimal_places=2)
     total_cost = models.DecimalField(max_digits=20, decimal_places=2)
     is_on_credit = models.BooleanField(default=False)
     is_paid = models.BooleanField(default=False)
     low_stock_threshold = models.IntegerField(default=5)
-    # image = models.ImageField(upload_to='stock/')
+    unit_price = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
+    
+    def save(self, *args, **kwargs):
+        if self.unit_cost is None:
+            self.unit_cost = Decimal('0.00')
+        if self.quantity is None:
+            self.quantity = 0
+
+        self.total_cost = self.quantity * self.unit_cost
+
+        # if self.quantity <= 0:
+        #     self.is_deleted = True
+        #     self.deleted_at = timezone.now()
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
-      return f"{self.name} - {self.quantity} items left"
-    
+        return f"{self.name} ({self.quantity} left)"
+
+    # image = models.ImageField(upload_to='stock/')
+
 class Supplier(models.Model):
     name = models.CharField(max_length=255)
     contact_info = models.CharField(max_length=255)
@@ -32,6 +56,7 @@ class Supplier(models.Model):
     email = models.EmailField()
     nin = models.CharField(max_length=14)
     stock_supplied = models.ForeignKey(Stock, on_delete=models.SET_NULL, null=True)
+    
 
     def __str__(self):
         return self.name

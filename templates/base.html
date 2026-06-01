@@ -11,8 +11,18 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-light">
-
+<style>
+        /* Modern sticky layout architecture */
+        .wrapper { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; min-width: 260px; background: #212529; min-height: 100vh; transition: all 0.3s; }
+        .main-content { flex-grow: 1; overflow-x: hidden; }
+        @media (max-width: 768px) {
+            .sidebar { margin-left: -260px; position: fixed; z-index: 1000; }
+            .sidebar.active { margin-left: 0; }
+        }
+    </style>
     <div class="d-flex">
+        
       {% include 'includes/sidebar.html'   %}
         
 
@@ -28,7 +38,7 @@
                     {% endfor %}
                 </div>
             {% endif %}
-
+        
             <main class="container-fluid">
                 {% block content %}
                 

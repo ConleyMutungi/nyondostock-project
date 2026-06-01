@@ -1,29 +1,39 @@
+from decimal import Decimal, InvalidOperation
+
 from django.shortcuts import redirect, render
 from django.db.models import Q, Sum
-# from stock.models import Stock
-from .models import Sale, CustomerProfile, CreditTransaction
+from stock.models import Stock
+from .models import Sale, CustomerProfile, CreditTransaction, Expense, PendingCreditOrder
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.views.generic import ListView
 from django.db import transaction
-# from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
-from .models import CustomerProfile, CreditTransaction, Expense
-from .forms import SaleForm
+from .forms import SaleForm, ExpenseForm
+
+CURRENCY_CODE = 'UGX'
+
+
+def get_credit_profile(user):
+    return getattr(user, 'profile', None)
 
 
 # Create your views here.
 @login_required
 def financial_dashboard(request):
-    #Sum up all sales revenue
-    total_sales = Sale.objects.aggregate(Sum('total_revenue'))['total_revenue_sum'] or 0
-
-    #Sum up all business expenses
-    total_expenses = Expense.objects.aggregate(Sum('price'))['price__sum'] or 0
-    
-    #Calculate final net profit using standard math: Profit = Revenue - Expenses
+    total_sales = Sale.objects.aggregate(Sum('unit_price'))['unit_price__sum'] or Decimal('0.00')
+    expense_totals = Expense.objects.aggregate(
+        total_price=Sum('price'),
+        total_transport=Sum('transport_cost'),
+        total_tax=Sum('tax_amount'),
+    )
+    total_expenses = (
+        (expense_totals['total_price'] or Decimal('0.00'))
+        + (expense_totals['total_transport'] or Decimal('0.00'))
+        + (expense_totals['total_tax'] or Decimal('0.00'))
+    )
     net_profit = total_sales - total_expenses
-
     context = {
         'total_sales': total_sales,
         'total_expenses': total_expenses,
@@ -31,45 +41,97 @@ def financial_dashboard(request):
     }
     return render(request, 'includes/dashboard.html', context)
 
-        #ai recommended I add Project Business Pages from Customers
+
 class StaffDashboardView(UserPassesTestMixin, ListView):
     model = Sale
-    template_name = 'finance/dashboard.html'   #Check this and research it
+    template_name = 'includes/dashboard.html'
 
-    #This test determines whether the user is allowed on this page
     def test_func(self):
-        return self.request.user.is_authenticated and self.request.user.is_staff_member
+        return self.request.user.is_authenticated and self.request.user.role in ['sales_attendant', 'store_manager', 'accounts_admin']
 
 
-def process_credit_purchase(user, total_cost, order_details=""):
-    # Ensure database integrity
+@login_required
+def process_credit_purchase(request):
+    if request.method != 'POST':
+        return redirect('credit_dashboard')
+
+    profile = get_credit_profile(request.user)
+    if profile is None:
+        return redirect('join_credit_scheme')
+
+    try:
+        stock_id = int(request.POST.get('stock_id'))
+        quantity = int(request.POST.get('quantity', '1'))
+    except (TypeError, ValueError):
+        return redirect('stock_list')
+
+    stock = get_object_or_404(Stock, pk=stock_id)
+    total_cost = (stock.unit_price or Decimal('0.00')) * Decimal(quantity)
+
     with transaction.atomic():
-        # select_for_update() locks the row until the transaction finishes
-        # This prevents the user from double-clicking and spending credit twice simultaneously
-        profile = CustomerProfile.objects.select_for_update().get(user=user)
-        
-        if profile.credit_balance < total_cost:
-            raise ValidationError("Insufficient store credit to complete this purchase.")
-        
-        # Deduct the cost
-        profile.credit_balance -= total_cost
-        profile.save()
-        
-        #   The history jazz of everything 
-        CreditTransaction.objects.create(
-            profile=profile,
-            amount=total_cost,
-            transaction_type='PURCHASE',
-            description=order_details
-        )
+        profile = CustomerProfile.objects.select_for_update().get(pk=profile.pk)
 
-def reload_customer_credit(user, deposit_amount, reference=""):
+        if profile.credit_balance >= total_cost:
+            # Complete purchase immediately
+            profile.credit_balance -= total_cost
+            profile.save()
+
+            # create sale record
+            Sale.objects.create(
+                stock=stock,
+                quantity_sold=quantity,
+                unit_price=stock.unit_price,
+            )
+
+            # update stock
+            if stock.quantity is None:
+                stock.quantity = 0
+            stock.quantity = max(0, stock.quantity - quantity)
+            stock.save()
+
+            CreditTransaction.objects.create(
+                profile=profile,
+                amount=total_cost,
+                transaction_type='PURCHASE',
+                description=f"Purchase of {stock.name} x{quantity}"
+            )
+        else:
+            # Create a pending order so user can deposit increments
+            PendingCreditOrder = __import__('finance.models', fromlist=['PendingCreditOrder']).PendingCreditOrder
+            PendingCreditOrder.objects.create(
+                profile=profile,
+                stock=stock,
+                quantity=quantity,
+                total_cost=total_cost
+            )
+
+    return redirect('credit_dashboard')
+
+
+@login_required
+def deposit_customer_credit(request):
+    if request.method != 'POST':
+        return redirect('credit_dashboard')
+
+    profile = get_credit_profile(request.user)
+    if profile is None:
+        return redirect('join_credit_scheme')
+
+    try:
+        deposit_amount = Decimal(request.POST.get('deposit_amount', '0.00'))
+    except InvalidOperation:
+        return redirect('credit_dashboard')
+
+    reference = request.POST.get('reference', '')
+
+    if deposit_amount <= 0:
+        return redirect('credit_dashboard')
+
     with transaction.atomic():
-        profile = CustomerProfile.objects.select_for_update().get(user=user)
-        
+        profile = CustomerProfile.objects.select_for_update().get(pk=profile.pk)
         profile.credit_balance += deposit_amount
         profile.save()
-        
+
         CreditTransaction.objects.create(
             profile=profile,
             amount=deposit_amount,
@@ -77,29 +139,109 @@ def reload_customer_credit(user, deposit_amount, reference=""):
             description=f"Deposit made. Ref: {reference}"
         )
 
+        # After deposit, check for pending orders and fulfill any that can be paid for now.
+        pending = PendingCreditOrder.objects.filter(profile=profile, is_completed=False).order_by('created_at')
+        for order in pending:
+            # reload profile from DB to get updated balance
+            profile.refresh_from_db()
+            stock = order.stock
+            if not stock:
+                continue
+            # ensure enough balance and stock quantity
+            if profile.credit_balance >= order.total_cost and (stock.quantity or 0) >= order.quantity:
+                # Deduct balance
+                profile.credit_balance -= order.total_cost
+                profile.save()
+
+                # Create Sale
+                Sale.objects.create(
+                    stock=stock,
+                    quantity_sold=order.quantity,
+                    unit_price=stock.unit_price,
+                )
+
+                # Update stock
+                stock.quantity = max(0, stock.quantity - order.quantity)
+                stock.save()
+
+                # Mark order completed
+                order.is_completed = True
+                order.save()
+
+                # Record transaction
+                CreditTransaction.objects.create(
+                    profile=profile,
+                    amount=order.total_cost,
+                    transaction_type='PURCHASE',
+                    description=f"Auto-completed pending purchase of {stock.name} x{order.quantity}"
+                )
+
+    return redirect('credit_dashboard')
+
+
+@login_required
+def join_credit_scheme(request):
+    profile = get_credit_profile(request.user)
+    if profile is not None:
+        return redirect('credit_dashboard')
+
+    if request.method == 'POST':
+        profile = CustomerProfile.objects.create(user=request.user)
+        return redirect('credit_dashboard')
+
+    return render(request, 'store/join_credit.html')
+
+
 @login_required
 def credit_dashboard(request):
-    # Automatically creates a profile if it doesn't exist yet (signals can also do this)
-    profile, created = CustomerProfile.objects.get_or_create(user=request.user)
-    
-    # Get the history, newest first
-    transactions = profile.transactions.all().order_by('-created_at')
+    profile = get_credit_profile(request.user)
+    transactions = []
+    totals = {
+        'total_reloads': 0,
+        'total_purchases': 0,
+        'total_refunds': 0,
+    }
 
-    totals = profile.transactions.aggregate(
-        total_reloads=Sum('amount', filter=Q(transaction_type='RELOAD')),
-        total_purchases=Sum('amount', filter=Q(transaction_type='PURCHASE')),
-        total_refunds=Sum('amount', filter=Q(transaction_type='REFUND')),
-    )
+    if profile is not None:
+        transactions = profile.transactions.all().order_by('-created_at')
+        totals = profile.transactions.aggregate(
+            total_reloads=Sum('amount', filter=Q(transaction_type='RELOAD')),
+            total_purchases=Sum('amount', filter=Q(transaction_type='PURCHASE')),
+            total_refunds=Sum('amount', filter=Q(transaction_type='REFUND')),
+        )
 
     context = {
         'profile': profile,
         'transactions': transactions,
-        'current_balance': profile.credit_balance,
+        'current_balance': profile.credit_balance if profile else Decimal('0.00'),
         'total_reloads': totals['total_reloads'] or 0,
         'total_purchases': totals['total_purchases'] or 0,
         'total_refunds': totals['total_refunds'] or 0,
+        'currency_code': CURRENCY_CODE,
     }
     return render(request, 'store/credit_dashboard.html', context)
+
+
+@login_required
+def expense_reg_form(request):
+    if request.method == 'POST':
+        form = ExpenseForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('expense_registration_form')
+    else:
+        form = ExpenseForm()
+
+    return render(request, 'store/expense_reg_form.html', {'form': form})
+
+
+@login_required
+def credit_members_list(request):
+    if request.user.role not in ['store_manager', 'accounts_admin']:
+        return redirect('dashboard')
+
+    profiles = CustomerProfile.objects.select_related('user').order_by('-credit_balance')
+    return render(request, 'store/credit_members.html', {'profiles': profiles, 'currency_code': CURRENCY_CODE})
 
 
 def sales_reg_form(request):
@@ -127,3 +269,8 @@ def sales_reg_form(request):
 def sales_list(request):
     sales = Sale.objects.all()
     return render (request, 'store/sales_list.html', {'sales':sales})
+
+def generate_receipt(request,pk):
+    sale = get_object_or_404(Sale, pk=pk)
+    
+    return render(request, 'store/receipt.html', {'sale': sale})

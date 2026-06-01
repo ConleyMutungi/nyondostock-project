@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block title %}Receipt #{{ sale.receipt_number }}{% endblock %}
+
+{% block content %}
+<style>
+    /* CSS specifically optimized for physical printer actions */
+    @media print {
+        body { background: #ffffff !important; color: #000000 !important; }
+        .no-print, .btn, .sidebar, nav { display: none !important; }
+        .container { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+        .card { border: none !important; box-shadow: none !important; }
+    }
+</style>
+
+<div class="container my-5">
+    <!-- Utility Controller Bar (Hidden when printing) -->
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+        <a href="{% url 'sales_list' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Back to Sales Log
+        </a>
+        <button onclick="window.print();" class="btn btn-primary">
+            <i class="bi bi-printer me-2"></i> Print Receipt
+        </button>
+    </div>
+
+    <!-- Main Receipt Document Layout Container -->
+    <div class="card shadow-sm border-light mx-auto col-12 col-lg-9">
+        <div class="card-body p-4 p-md-5">
+            
+            <!-- Branding & Metadata Row Header -->
+            <div class="row border-bottom pb-4 mb-4">
+                <div class="col-sm-6 text-center text-sm-start mb-3 mb-sm-0">
+                    <h3 class="fw-bold text-primary mb-1">NYONDO STOCK HARDWARE LTD</h3>
+                    <p class="text-muted small mb-0">
+                        Building Materials, Tools & Electricals<br>
+                        Plot 42, Kampala Road, Uganda<br>
+                        Contact: +256 700 000 000
+                    </p>
+                </div>
+                <div class="col-sm-6 text-center text-sm-end">
+                    <h4 class="text-uppercase fw-normal text-secondary mb-1">CASH RECEIPT</h4>
+                    <span class="badge bg-success text-success bg-opacity-10 border border-success border-opacity-25 mb-2">Transaction Approved</span>
+                    <ul class="list-unstyled small text-muted mb-0">
+                        <li><strong>Receipt No:</strong> <span class="text-dark fw-medium">#{{ sale.receipt_number }}</span></li>
+                        <li><strong>Date:</strong> {{ sale.date_issued|date:"M d, Y" }} {{ sale.date_issued|time:"H:i" }}</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Customer & Employee Directory Context Row -->
+            <div class="row mb-4 bg-light p-3 rounded mx-0">
+                <div class="col-6 small">
+                    <span class="text-muted text-uppercase d-block mb-1">Billed To</span>
+                    <strong class="text-dark">{{ sale.customer_name }}</strong>
+                </div>
+                <div class="col-6 text-end small">
+                    <span class="text-muted text-uppercase d-block mb-1">Served By</span>
+                    
+                </div>
+            </div>
+
+            <!-- Detailed Sales Ledger Table Block -->
+            <div class="table-responsive mb-4">
+                <table class="table align-middle">
+                    <thead class="table-light text-uppercase small text-muted">
+                        <tr>
+                            <th style="width: 45%;">Item Description</th>
+                            <th class="text-center" style="width: 15%;">Qty</th>
+                            <th class="text-end" style="width: 20%;">Unit Price</th>
+                            <th class="text-end" style="width: 20%;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        {% for item in items %}
+                            <tr>
+                                <td>
+                                    <span class="fw-semibold text-dark d-block">{{ item.product.name }}</span>
+                                    <span class="text-muted small">Code: {{ item.product.sku }}</span>
+                                </td>
+                                <td class="text-center fw-medium text-secondary">
+                                    {{ item.quantity|floatformat:"-2" }}
+                                </td>
+                                <td class="text-end text-muted">
+                                    <span class="small text-secondary me-1">UGX</span>{{ item.unit_price|floatformat:"2" }}
+                                </td>
+                                <td class="text-end fw-semibold text-dark">
+                                    <span class="small text-secondary me-1">UGX</span>{{ item.subtotal|floatformat:"2" }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Payment Breakdown Footer Segment Summary -->
+            <div class="row justify-content-end pt-3">
+                <div class="col-md-6 col-sm-8">
+                    <table class="table table-sm table-borderless small">
+                        <tbody>
+                            <tr>
+                                <td class="text-muted">Payment Mode:</td>
+                                <td class="text-end fw-medium text-dark">{{ sale.payment_method }}</td>
+                            </tr>
+                            <tr class="border-top">
+                                <td class="fs-6 fw-bold text-dark pt-2">Amount Paid:</td>
+                                <td class="fs-5 fw-bold text-success text-end pt-2">
+                                    <span class="fs-6 fw-normal text-secondary me-1">UGX</span>{{ sale.total_amount|floatformat:"2" }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Small Legal Compliance Disclaimer Message -->
+            <div class="text-center border-top pt-4 mt-5">
+                <p class="text-muted small mb-1 fw-medium">Thank you for your business!</p>
+                <p class="text-muted opacity-75 small">Goods once cut, mixed, or delivered cannot be returned. Please verify all item counts before leaving our dispatch counter.</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

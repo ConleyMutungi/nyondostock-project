@@ -8,7 +8,10 @@ def register_user(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            if form.cleaned_data.get('credit_opt_in'):
+                from finance.models import CustomerProfile
+                CustomerProfile.objects.get_or_create(user=user)
             return redirect('login')
         
     else:
@@ -19,5 +22,7 @@ def register_user(request):
 def dashboard(request):
     if request.user.is_staff:
         return redirect('staff_dashboard')  # Redirect staff to their dashboard
-    context = {} 
+    context = {
+        'user': request.user,
+    } 
     return render(request, 'includes/dashboard.html', context)

@@ -1,0 +1,14 @@
+/* Dashboard and credit UI tweaks */
+.credit-balance {
+  background: linear-gradient(90deg,#e9f7ef,#fff);
+  border-left: 4px solid #198754;
+  padding: 1rem 1.25rem;
+  border-radius: .375rem;
+}
+.summary-card { border-radius: .5rem; }
+.pending-badge { background: linear-gradient(90deg,#fff3cd,#ffe8a1); color:#6b4b00; border-radius: .5rem; padding: .35rem .6rem; }
+.small-muted { color: #6c757d; }
+.card-header-compact { padding: .75rem 1rem; }
+.table-hover tbody tr:hover { background-color: #f8f9fa; }
+.deposit-input { max-width: 320px; }
+.buy-credit-input input { width: 80px; }

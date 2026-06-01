@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% load humanize static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
 {% block title %}
     Stock List
 {% endblock %}
@@ -27,10 +31,12 @@
                         <tr>
                             <th class="ps-4 py-3" style="width: 30%;">Item Name</th>
                             <th class="py-3">Quantity Available</th>
+                            <th class="py-3">Unit Price</th>
                             <th class="py-3">Total Cost</th>
                             <th class="py-3">Payment Status</th>
                             <th class="py-3">Date Added</th>
                             <th class="pe-4 py-3 text-end">Actions</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -50,10 +56,13 @@
                                 <td class="py-3">
                                     <span class="fs-5 fw-bold text-secondary">{{ stock.quantity }}</span> units
                                 </td>
+                                <td class="py-3">
+                                    <span class="fw-bold text-dark">{{ stock.unit_price|floatformat:0|intcomma }}</span>
+                                </td>
                                 
                                 <!-- Total Cost -->
                                 <td class="py-3 fw-medium text-dark">
-                                    {{ stock.total_cost }}
+                                    {{ stock.total_cost|floatformat:0|intcomma }}
                                 </td>
                                 
                                 <!-- Payment / Credit Badges -->
@@ -76,8 +85,9 @@
                                 <td class="pe-4 py-3 text-end">
                                     <div class="btn-group btn-group-sm" role="group">
                                         <!-- Replace these dummy URLs with your actual detail/edit endpoints when ready -->
-                                        <a href="#" class="btn btn-outline-secondary" title="View details">View</a>
-                                        <a href="#" class="btn btn-outline-primary" title="Edit item">Edit</a>
+                                        <a href="{% url 'stock_detail' stock.id %}" class="btn btn-outline-secondary" title="View details">View</a>
+                                        <a href="{% url 'stock_edit' stock.id %}" class="btn btn-outline-primary" title="Edit item">Edit</a>
+                                        <a href="{% url 'stock_delete' stock.id %}" class="btn btn-outline-danger" title="Delete item" onclick="return confirm('Are you sure you want to permanently remove this stock?');">Delete</a>
                                     </div>
                                 </td>
                             </tr>

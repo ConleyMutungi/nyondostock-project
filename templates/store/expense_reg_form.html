@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Expense Registration{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Record New Expense</h2>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Save Expense</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const priceField = document.getElementById('id_price');
+    const transportField = document.getElementById('id_transport_cost');
+    const taxField = document.getElementById('id_tax_amount');
+    const totalField = document.getElementById('id_total_amount');
+
+    function updateTotalAmount() {
+        const price = parseFloat(priceField?.value) || 0;
+        const transport = parseFloat(transportField?.value) || 0;
+        const tax = parseFloat(taxField?.value) || 0;
+        if (totalField) {
+            totalField.value = (Math.abs(price) + Math.abs(transport) + Math.abs(tax)).toFixed(2);
+        }
+    }
+
+    priceField?.addEventListener('input', updateTotalAmount);
+    transportField?.addEventListener('input', updateTotalAmount);
+    taxField?.addEventListener('input', updateTotalAmount);
+    updateTotalAmount();
+});
+</script>
+{% endblock %}

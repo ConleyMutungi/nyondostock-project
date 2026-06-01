@@ -1,90 +1,71 @@
 <!-- Sidebar Start -->
-        <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark min-vh-100" style="width: 280px;">
-            
-            <!-- Brand / Logo Link -->
-            <a href="{% url 'dashboard' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none gap-2">
-                <i class="bi bi-bootstrap-fill fs-4 text-primary"></i>
-                <span class="fs-4 fw-semibold">Go to Dashboard</span>
+<div class="d-flex flex-column flex-shrink-0 p-4 text-bg-dark min-vh-100 shadow" style="width: 280px; background-color: #111418 !important;">
+    
+    <!-- Brand / Logo Link -->
+    <a href="{% url 'dashboard' %}" class="d-flex flex-column align-items-center mb-4 text-decoration-none text-center">
+        <!-- Logo Image Integration -->
+        <img src="/static/images/nyondo_logo.png" alt="NyondoStock Logo" class="img-fluid rounded-circle mb-2 border border-secondary" style="width: 110px; height: 110px; object-fit: cover;">
+        <span class="fs-5 fw-bold text-white tracking-wide">NyondoStock Hardware</span>
+    </a>
+    
+    <hr class="border-secondary opacity-25 my-2">
+
+    <!-- Navigation Links -->
+    <ul class="nav nav-pills flex-column mb-auto gap-2">
+        <!-- Core Module -->
+        <li class="nav-item">
+            <a href="{% url 'credit_dashboard' %}" class="nav-link py-2.5 px-3 text-white {% if request.resolver_match.url_name == 'credit_dashboard' %}active bg-primary{% else %}hover-opacity{% endif %} d-flex align-items-center gap-3">
+                <i class="bi bi-shield-check fs-5"></i>
+                <span class="fw-medium">Credit</span>
             </a>
-            
-            <hr class="border-secondary">
+        </li>
+        <!-- Stock Module with Dynamic Badge -->
+       
 
-            <!-- Navigation Links -->
-            <ul class="nav nav-pills flex-column mb-auto gap-1">
-                <!-- Core Module -->
-                <li class="nav-item">
-                    <a href="{% url 'credit_dashboard' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'credit_dashboard' %}active{% endif %} d-flex align-items-center gap-2">
-                        <i class="bi bi-house-door"></i>
-                        <span>Credit Dashboard</span>
-                    </a>
-                </li>
+        <!-- Sales Module -->
+        <li>
+            <a href="{% url 'sales_list' %}" class="nav-link py-2.5 px-3 text-white {% if request.resolver_match.url_name == 'sales_list' %}active bg-primary{% else %}hover-opacity{% endif %} d-flex align-items-center gap-3">
+                <i class="bi bi-bar-chart-line fs-5"></i>
+                <span class="fw-medium">Sales</span>
+            </a>
+        </li>
 
-                <!-- Future Page Link 1: Analytics / Reports -->
-                <li>
-                    <a href="{% url 'sales_list' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'sales_list' %}active{% endif %} d-flex align-items-center gap-2">
-                        <i class="bi bi-bar-chart"></i>
-                        <span>Sales</span>
-                    </a>
-                </li>
+        <!-- Suppliers Module -->
+        <li>
+            <a href="{% url 'supplier_list' %}" class="nav-link py-2.5 px-3 text-white {% if request.resolver_match.url_name == 'supplier_list' %}active bg-primary{% else %}hover-opacity{% endif %} d-flex align-items-center gap-3">
+                <i class="bi bi-truck fs-5"></i>
+                <span class="fw-medium">Suppliers</span>
+            </a>
+        </li>
 
-                <!-- Future Page Link 2: User Profiles / Management -->
-                <li>
-                    <a href="{% url 'supplier_list' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'supplier_list' %}active{% endif %} d-flex align-items-center gap-2">
-                        <i class="bi bi-people"></i>
-                        <span>Suppliers</span>
-                    </a>
-                </li>
+        <!-- Stock Module -->
+        <li>
+            <a href="{% url 'stock_list' %}" class="nav-link py-2.5 px-3 text-white {% if request.resolver_match.url_name == 'stock_list' %}active bg-primary{% else %}hover-opacity{% endif %} d-flex align-items-center gap-3">
+                <i class="bi bi-box-seam fs-5"></i>
+                <span class="fw-medium">Stock</span>
+            </a>
+             <!-- Dynamic Counter Display Indicator -->
+            {% if low_stock_count > 0 %}
+            <span class="badge bg-danger rounded-pill px-2.5 py-1 text-white fw-bold shadow-sm animation-pulse">
+                {{ low_stock_count }}
+            </span>
+            {% endif %}
+            </a>
+        </li>
+    </ul>
+    
+    <hr class="border-secondary opacity-25 my-3">
 
-                <!-- Future Page Link 3: Projects / Management Tasks -->
-                <li>
-                    <a href="{% url 'stock_list' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'stock_list' %}active{% endif %} d-flex align-items-center gap-2">
-                        <i class="bi bi-folder2"></i>
-                        <span>Stock</span>
-                    </a>
-                </li>
+    <!-- User Actions (Logout) -->
+    <div class="px-2">
+        <form method="post" action="{% url 'logout' %}" class="d-grid">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2 py-2">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+            </button>
+        </form>
+    </div>
 
-                <!-- Future Page Link 4: Notifications / Inbox -->
-                <!-- <li>
-                    <a href="#" class="nav-link text-white {% if request.resolver_match.url_name == 'notifications_page' %}active{% endif %} d-flex align-items-center gap-2">
-                        <i class="bi bi-bell"></i>
-                        <span>Notifications</span>
-                    </a>
-                </li>
-
-                <!-- Future Page Link 5: Global Configurations / Settings -->
-                <!-- <li>
-                    <a href="#" class="nav-link text-white {% if request.resolver_match.url_name == 'settings_page' %}active{% endif %} d-flex align-items-center gap-2">
-                        <i class="bi bi-gear"></i>
-                        <span>Settings</span>
-                    </a>
-                </li> --> 
-            </ul>
-            
-            <hr class="border-secondary">
-
-            <!-- User Profile Dropdown
-            <div class="dropdown">
-                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                    {% if user.profile.image %}
-                        <img src="{{ user.profile.image.url }}" alt="avatar" width="32" height="32" class="rounded-circle me-2">
-                    {% else %}
-                        <i class="bi bi-person-circle fs-5 me-2"></i>
-                    {% endif %}
-                    <strong>{{ user.username|default:"Guest" }}</strong>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-dark text-small shadow border-0" aria-labelledby="dropdownUser">
-                    <li><a class="dropdown-item" href="#">My Profile</a></li>
-                    <li><a class="dropdown-item" href="#">Account Settings</a></li>
-                    <li><hr class="dropdown-divider border-secondary"></li>
-                    <li> -->
-                        <!-- Safe Django POST submission layout for secure logout action -->
-                        <form method="post" action="{% url 'logout' %}" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="dropdown-item text-danger">Sign out</button>
-                        </form>
-                    <!-- </li> -->
-                <!-- </ul> -->
-            <!-- </div> -->
-
-        </div>
-        <!-- Sidebar End -->
+</div>
+<!-- Sidebar End -->
