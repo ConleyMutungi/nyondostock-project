@@ -25,6 +25,8 @@ class Sale(models.Model):
     delivery_fee = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
     date = models.DateField(auto_now_add=True)
     unit_price = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
+    expense_amount = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
+    net_profit = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
     # Recorded_By = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True, blank=True)
     # supplied_by = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True)
 
@@ -36,6 +38,17 @@ class Sale(models.Model):
         if self.stock is not None:
             self.unit_price = self.stock.unit_price
         self.delivery_fee = self.calculate_delivery_fee(self.delivery_distance)
+        # Calculate expenses and net profit per sale
+        total_revenue = (self.unit_price or Decimal('0.00')) * Decimal(self.quantity_sold or 0)
+        cost_of_goods = (self.stock.unit_cost if self.stock and self.stock.unit_cost is not None else Decimal('0.00')) * Decimal(self.quantity_sold or 0)
+        pct = getattr(settings, 'SALE_EXPENSE_PERCENTAGE', Decimal('0.10'))
+        try:
+            pct = Decimal(pct)
+        except Exception:
+            pct = Decimal('0.10')
+        self.expense_amount = (total_revenue * pct).quantize(Decimal('0.01'))
+        # Net profit = revenue - COGS - expense - delivery fee
+        self.net_profit = (total_revenue - cost_of_goods - self.expense_amount - (self.delivery_fee or Decimal('0.00'))).quantize(Decimal('0.01'))
         super().save(*args, **kwargs)
 
     @staticmethod

@@ -11,6 +11,8 @@ ROLE_CHOICES = [
 
 class CustomUser(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='customer')
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    nin = models.CharField(max_length=20, blank=True, null=True, unique=False)
     # is_staff_member = models.BooleanField(default=False)
 
     def __str__(self):
