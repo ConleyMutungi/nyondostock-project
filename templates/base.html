@@ -1,59 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Nyondo Stock{% endblock %}</title> 
-    <!-- Bootstrap 5 CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <!-- Bootstrap Icons CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" integrity="sha384-+eYBq4iYHj+2pJqT3r8VbQ+9VnN1VtM2e5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5Z5" crossorigin="anonymous">
+    <title>{% block title %}Nyondo Stock{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-light">
-<style>
-        /* Modern sticky layout architecture */
-        .wrapper { display: flex; min-height: 100vh; }
-        .sidebar { width: 260px; min-width: 260px; background: #212529; min-height: 100vh; transition: all 0.3s; }
-        .main-content { flex-grow: 1; overflow-x: hidden; }
-        @media (max-width: 768px) {
-            .sidebar { margin-left: -260px; position: fixed; z-index: 1000; }
-            .sidebar.active { margin-left: 0; }
-        }
-    </style>
-    <div class="d-flex">
-        {% if request.resolver_match and request.resolver_match.url_name not in 'login logout generate_receipt' %}
-            {% include 'includes/sidebar.html' %}
+    <div class="wrapper">
+        {% if request.resolver_match and request.resolver_match.url_name not in 'login' and request.resolver_match.url_name not in 'logout' and request.resolver_match.url_name not in 'generate_receipt' and request.resolver_match.url_name != 'register_user' %}
+            <aside id="sidebarMenu" class="sidebar shadow-sm">
+                {% include 'includes/sidebar.html' %}
+            </aside>
         {% endif %}
 
-        <!-- Dynamic Main Content Wrapper -->
-        <div class="flex-grow-1 p-4 bg-body" style="overflow-y: auto;">
-            {% if messages %}
-                <div class="container-fluid mb-3">
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="main-content">
+            {% if request.resolver_match and request.resolver_match.url_name not in 'login' and request.resolver_match.url_name not in 'logout' and request.resolver_match.url_name not in 'generate_receipt' and request.resolver_match.url_name != 'register_user' %} 
+                <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm topbar">
+                    <div class="container-fluid px-3">
+                        <button class="btn btn-outline-secondary d-lg-none sidebar-toggler me-2" type="button" aria-label="Toggle sidebar">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        <a class="navbar-brand fw-bold mb-0" href="{% url 'dashboard' %}">NyondoStock</a>
+                        <div class="d-none d-lg-flex align-items-center ms-auto text-muted small">
+                            Modern stock & sales management.
                         </div>
-                    {% endfor %}
-                </div>
+                    </div>
+                </nav>
             {% endif %}
-        
-            <main class="container-fluid">
-                {% block content %}
-                
-                {% endblock content %}
-            </main>
+
+            <div class="content-area">
+                {% if messages %}
+                    <div class="container-fluid py-3">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <main class="container-fluid py-4">
+                    {% block content %}{% endblock content %}
+                </main>
+            </div>
         </div>
     </div>
 
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <footer class="footer mt-auto py-3 bg-light border-top">
+    <footer class="footer mt-auto py-3 bg-white border-top">
         <div class="container text-center">
-            <span class="text-muted">&copy; {% now "Y" %} Nyondostock. Building Bonds. All rights reserved. </span>
+            <span class="text-muted">&copy; {% now "Y" %} Nyondostock. Building Bonds. All rights reserved.</span>
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebar = document.getElementById('sidebarMenu');
+        const toggler = document.querySelector('.sidebar-toggler');
+        if (sidebar && toggler) {
+            toggler.addEventListener('click', () => sidebar.classList.toggle('active'));
+        }
+    </script>
 </body>
 </html>

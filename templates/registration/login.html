@@ -1,36 +1,32 @@
 {% extends 'base.html' %}
-{%load crispy_forms_tags static %}
-{% block title %}
-    Login Form
-{% endblock %}
-
-<!-- {# This will replace the content within the block #} -->
-{% block navs %}{% endblock %}
+{% load crispy_forms_tags static %}
+{% block title %}Login | NyondoStock{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/login.css' %}">
 {% endblock %}
 
 {% block content %}
-    <div class="login-page">
-        <div class="login-container">
-            <div class="welcome-text">
-                <h1>Welcome Nyondo Stock</h1>
-                <p>To Login</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-9 col-lg-6 col-xl-5">
+            <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h1 class="h3 fw-bold mb-2">Welcome Back</h1>
+                        <p class="text-muted mb-0">Sign in to manage your inventory, sales, and suppliers.</p>
+                    </div>
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+                        {{ form | crispy }}
+                        <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center py-3">
+                    <p class="mb-0 text-muted">Don't have an account? <a href="{% url 'register_user' %}">Register now</a></p>
+                </div>
             </div>
-            <div class="card shadow-sm py-4 px-4">
-                <form method="POST" novalidate>
-                    {% csrf_token %}
-                     {{ form |crispy}}
-
-                  <button type="submit" class="btn btn-success">Login</button>
-
-                </form>
-            </div>
-     <div>
-        <p>Don't have an account <a href="{% url 'register_user' %}">Register</a>
-        </p>
         </div>
-     </div>
     </div>
+</div>
 {% endblock %}

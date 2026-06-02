@@ -1,0 +1,137 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: #f4f6f9;
+  color: #1f2937;
+}
+
+.wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  color: #e2e8f0;
+}
+
+.sidebar-content {
+  min-height: 100vh;
+}
+
+.sidebar-content a {
+  color: #e2e8f0;
+}
+
+.sidebar-content .nav-link {
+  color: #cbd5e1;
+  border-radius: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar-content .nav-link:hover,
+.sidebar-content .nav-link.active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-content .badge {
+  font-size: 0.8rem;
+}
+
+.topbar {
+  z-index: 900;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-area {
+  flex: 1;
+}
+
+.card {
+  border: 0;
+  border-radius: 1rem;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.btn-outline-secondary {
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #e2e8f0;
+}
+
+.table thead th {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.footer {
+  background: #ffffff;
+}
+
+@media (max-width: 992px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    height: 100%;
+    transition: left 0.25s ease;
+  }
+
+  .sidebar.active {
+    left: 0;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .topbar .navbar-brand {
+    font-size: 1rem;
+  }
+}
+
+.login-page {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 420px;
+}

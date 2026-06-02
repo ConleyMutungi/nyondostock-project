@@ -1,77 +1,61 @@
 <!-- Sidebar Start -->
-<div class="d-flex flex-column flex-shrink-0 p-4 text-bg-dark min-vh-100 shadow" style="width: 280px; background-color: #111418 !important;">
-    
-    <!-- Brand / Logo Link -->
+<div class="d-flex flex-column flex-shrink-0 p-4 min-vh-100 sidebar-content">
     <a href="{% url 'dashboard' %}" class="d-flex flex-column align-items-center mb-4 text-decoration-none text-center">
-        <!-- Logo Image Integration -->
-        <img src="/static/images/nyondo_logo.png" alt="NyondoStock Logo" class="img-fluid rounded-circle mb-2 border border-secondary" style="width: 110px; height: 110px; object-fit: cover;">
-        <span class="fs-5 fw-bold text-white tracking-wide">NyondoStock Hardware</span>
+        <img src="/static/images/nyondo_logo.png" alt="NyondoStock Logo" class="img-fluid rounded-circle mb-3 border border-2 border-white" style="width: 96px; height: 96px; object-fit: cover;">
+        <span class="fs-5 fw-bold text-white">NyondoStock</span>
+        <span class="text-white-50 small">Hardware Store</span>
     </a>
-    
-    <hr class="border-secondary opacity-25 my-2">
 
-    <!-- Navigation Links -->
+    <hr class="border-white-25 my-3">
+
     <ul class="nav nav-pills flex-column mb-auto gap-2">
-        <!-- Core Module -->
         <li class="nav-item">
-            <a href="{% url 'credit_dashboard' %}" class="nav-link py-2.5 px-3 text-white {% if request.resolver_match.url_name == 'credit_dashboard' %}active bg-primary{% else %}hover-opacity{% endif %} d-flex align-items-center gap-3">
-                <i class="bi bi-shield-check fs-5"></i>
-                <span class="fw-medium">Credit</span>
+            <a href="{% url 'credit_dashboard' %}" class="nav-link py-2 px-3 d-flex align-items-center justify-content-between {% if request.resolver_match.url_name == 'credit_dashboard' %}active bg-primary{% else %}text-white-75{% endif %}">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check fs-5"></i>
+                    <span>Credit</span>
+                </span>
             </a>
         </li>
-        <!-- Stock Module with Dynamic Badge -->
-       
-
-        <!-- Sales Module -->
-        <li>
-            <a href="{% url 'sales_list' %}" class="nav-link py-2.5 px-3 text-white {% if request.resolver_match.url_name == 'sales_list' %}active bg-primary{% else %}hover-opacity{% endif %} d-flex align-items-center gap-3">
+        <li class="nav-item">
+            <a href="{% url 'sales_list' %}" class="nav-link py-2 px-3 d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'sales_list' %}active bg-primary{% else %}text-white-75{% endif %}">
                 <i class="bi bi-bar-chart-line fs-5"></i>
-                <span class="fw-medium">Sales</span>
+                <span>Sales</span>
             </a>
         </li>
-        <li>
-            <a href="{% url 'sales_by_stock_report' %}" class="nav-link py-2.5 px-3 text-white {% if request.resolver_match.url_name == 'sales_by_stock_report' %}active bg-primary{% else %}hover-opacity{% endif %} d-flex align-items-center gap-3">
+        <li class="nav-item">
+            <a href="{% url 'sales_by_stock_report' %}" class="nav-link py-2 px-3 d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'sales_by_stock_report' %}active bg-primary{% else %}text-white-75{% endif %}">
                 <i class="bi bi-file-earmark-bar-graph fs-5"></i>
-                <span class="fw-medium">Sales by Stock</span>
+                <span>Sales by Stock</span>
             </a>
         </li>
-
-        <!-- Suppliers Module -->
-        <li>
-            <a href="{% url 'supplier_list' %}" class="nav-link py-2.5 px-3 text-white {% if request.resolver_match.url_name == 'supplier_list' %}active bg-primary{% else %}hover-opacity{% endif %} d-flex align-items-center gap-3">
+        <li class="nav-item">
+            <a href="{% url 'supplier_list' %}" class="nav-link py-2 px-3 d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'supplier_list' %}active bg-primary{% else %}text-white-75{% endif %}">
                 <i class="bi bi-truck fs-5"></i>
-                <span class="fw-medium">Suppliers</span>
+                <span>Suppliers</span>
             </a>
         </li>
-
-        <!-- Stock Module -->
-        <li>
-            <a href="{% url 'stock_list' %}" class="nav-link py-2.5 px-3 text-white {% if request.resolver_match.url_name == 'stock_list' %}active bg-primary{% else %}hover-opacity{% endif %} d-flex align-items-center gap-3">
-                <i class="bi bi-box-seam fs-5"></i>
-                <span class="fw-medium">Stock</span>
-            </a>
-             <!-- Dynamic Counter Display Indicator -->
-            {% if low_stock_count > 0 %}
-            <span class="badge bg-danger rounded-pill px-2.5 py-1 text-white fw-bold shadow-sm animation-pulse">
-                {{ low_stock_count }}
-            </span>
-            {% endif %}
+        <li class="nav-item">
+            <a href="{% url 'stock_list' %}" class="nav-link py-2 px-3 d-flex align-items-center justify-content-between {% if request.resolver_match.url_name == 'stock_list' %}active bg-primary{% else %}text-white-75{% endif %}">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-box-seam fs-5"></i>
+                    <span>Stock</span>
+                </span>
+                {% if low_stock_count > 0 %}
+                    <span class="badge bg-danger rounded-pill px-2 py-1 text-white">{{ low_stock_count }}</span>
+                {% endif %}
             </a>
         </li>
     </ul>
-    
-    <hr class="border-secondary opacity-25 my-3">
 
-    <!-- User Actions (Logout) -->
-    <div class="px-2">
+    <div class="mt-auto pt-3">
         <form method="post" action="{% url 'logout' %}" class="d-grid">
             {% csrf_token %}
-            <button type="submit" class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2 py-2">
+            <button type="submit" class="btn btn-outline-light d-flex align-items-center justify-content-center gap-2 py-2">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Sign Out</span>
             </button>
         </form>
     </div>
-
 </div>
 <!-- Sidebar End -->
