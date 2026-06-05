@@ -12,6 +12,21 @@ class StockForm(forms.ModelForm):
                 'readonly': 'readonly',
                 'step': '0.01',
             }),
+            'quantity': forms.NumberInput(attrs={
+                'min': '1',
+            }),
+            'total_cost': forms.NumberInput(attrs={
+                'readonly': 'readonly',
+                'step': '0.01',
+            }),
+        }
+        error_messages = {
+            'quantity': {
+                'min_value': 'Quantity must be at least 1.',
+            },
+            'total_cost': {
+                'min_value': 'Total cost cannot be negative.',
+            },
         }
 
 class StockRestockForm(forms.Form):

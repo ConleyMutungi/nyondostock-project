@@ -8,6 +8,14 @@ class SaleForm(forms.ModelForm):
         widgets = {
             'delivery_distance': forms.NumberInput(attrs={'step': '0.01', 'min': '0.00'}),
         }
+        error_messages = {
+            'quantity_sold': {
+                'min_value': 'Quantity sold must be at least 1.',
+            },
+            'delivery_distance': {
+                'min_value': 'Delivery distance cannot be negative.',
+            },
+        }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['delivery_distance'].label = 'Delivery distance (km)'
@@ -22,4 +30,9 @@ class ExpenseForm(forms.ModelForm):
                 'readonly': 'readonly',
                 'step': '0.01',
             }),
+        }
+        error_messages = {
+            'total_amount': {
+                'min_value': 'Total amount cannot be negative.',
+            },
         }

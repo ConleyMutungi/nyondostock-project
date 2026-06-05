@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 ROLE_CHOICES = [
-    ('customer', 'Customer'),
     ('sales_attendant', 'Sales Attendant'),
     ('store_manager', 'Store Manager'),
     ('accounts_admin', 'Accounts Admin'),
