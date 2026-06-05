@@ -9,7 +9,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <h3 class="h5 mb-3">Register Stock Item</h3>
-            <form method="POST">
+            <form method="POST" novalidate>
                 {% csrf_token %}
                 {{ form |crispy }}
                 <div class="mt-3">

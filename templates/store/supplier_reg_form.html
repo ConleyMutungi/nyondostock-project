@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 {% block title %} Supplier Registration {% endblock %}
 {% block content %}
-    <form method="POST">
+    <form method="POST" novalidate>
 
         {% csrf_token %}
         {{ form |crispy }}

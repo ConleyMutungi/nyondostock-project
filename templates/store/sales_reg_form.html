@@ -12,7 +12,7 @@
                     Selling <strong>{{ selected_stock.name }}</strong> at UGX {{ selected_stock.unit_price|floatformat:2|intcomma }} per unit.
                 </div>
             {% endif %}
-            <form method="POST">
+            <form method="POST" novalidate>
                 {% csrf_token %}
                 <div class="row g-3">
                     <div class="col-md-6">{{ form.customer_name|as_crispy_field }}</div>
