@@ -1,4 +1,5 @@
 from decimal import Decimal, InvalidOperation
+import json
 
 from django.shortcuts import redirect, render
 from django.db.models import Q, Sum, F, Value, ExpressionWrapper, DecimalField, Max
@@ -238,11 +239,60 @@ def expense_reg_form(request):
         form = ExpenseForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('expense_registration_form')
+            messages.success(request, 'Expense recorded successfully!')
+            return redirect('expenses_list')
     else:
         form = ExpenseForm()
 
-    return render(request, 'store/expense_reg_form.html', {'form': form})
+    stock_purchase_prices = {
+        str(stock.pk): str(stock.unit_cost or Decimal('0.00'))
+        for stock in Stock.objects.only('pk', 'unit_cost')
+    }
+
+    return render(request, 'store/expense_reg_form.html', {
+        'form': form,
+        'stock_purchase_prices': json.dumps(stock_purchase_prices),
+    })
+
+
+@login_required
+def expenses_list(request):
+    """Display all recorded expenses with filtering and pagination"""
+    expenses = Expense.objects.select_related('stock').order_by('-date')
+    
+    # Optional filtering by date range
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    
+    if date_from:
+        try:
+            from django.utils.dateparse import parse_date
+            expenses = expenses.filter(date__gte=parse_date(date_from))
+        except Exception:
+            pass
+    
+    if date_to:
+        try:
+            from django.utils.dateparse import parse_date
+            expenses = expenses.filter(date__lte=parse_date(date_to))
+        except Exception:
+            pass
+    
+    # Calculate totals
+    expense_summary = expenses.aggregate(
+        total_price=Sum('price'),
+        total_transport=Sum('transport_cost'),
+        total_tax=Sum('tax_amount'),
+        total_amount=Sum('total_amount'),
+    )
+    
+    context = {
+        'expenses': expenses,
+        'expense_summary': expense_summary,
+        'currency_code': CURRENCY_CODE,
+    }
+    
+    return render(request, 'store/expenses_list.html', context)
 
 
 @login_required

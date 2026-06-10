@@ -8,6 +8,7 @@ urlpatterns = [
     path('process-credit-purchase/', views.process_credit_purchase, name='process_credit_purchase'),
     path('credit-dashboard/', views.credit_dashboard, name='credit_dashboard'),
     path('expenses/new/', views.expense_reg_form, name='expense_registration_form'),
+    path('expenses/', views.expenses_list, name='expenses_list'),
     path('', views.sales_list, name='sales_list'),
     path('sales/report-by-stock/', views.sales_by_stock_report, name='sales_by_stock_report'),
     path('sales/new/', views.sales_reg_form, name='sales_reg_form'),

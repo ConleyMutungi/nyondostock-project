@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
-    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Nyondo Stock{% endblock %}</title>
@@ -25,7 +25,10 @@
                         <button class="btn btn-outline-secondary d-lg-none sidebar-toggler me-2" type="button" aria-label="Toggle sidebar">
                             <i class="bi bi-list"></i>
                         </button>
-                        <a class="navbar-brand fw-bold mb-0" href="{% url 'dashboard' %}">NyondoStock</a>
+                        <a class="navbar-brand fw-bold mb-0 d-flex align-items-center gap-2" href="{% url 'dashboard' %}">
+                            <img src="{% static 'images/nyondo_logo.png' %}" alt="NyondoStock Logo" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+                            <span>NyondoStock</span>
+                        </a>
                         <div class="d-none d-lg-flex align-items-center ms-auto text-muted small">
                             Modern stock & sales management.
                         </div>

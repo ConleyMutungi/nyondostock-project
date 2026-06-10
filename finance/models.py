@@ -77,6 +77,7 @@ class Sale(models.Model):
         return self.total_revenue + (self.delivery_fee or Decimal('0.00'))
 
 class Expense(models.Model):
+    stock = models.ForeignKey(Stock, on_delete=models.SET_NULL, null=True, blank=True)
     price = models.DecimalField(max_digits=20, decimal_places=2, default=Decimal('0.00'))
     transport_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     tax_amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
@@ -89,6 +90,8 @@ class Expense(models.Model):
     def save(self, *args, **kwargs):
         self.transport_cost = abs(self.transport_cost or Decimal('0.00'))
         self.tax_amount = abs(self.tax_amount or Decimal('0.00'))
+        if self.stock is not None:
+            self.price = self.stock.unit_cost or Decimal('0.00')
         self.price = abs(self.price or Decimal('0.00'))
         self.total_amount = self.price + self.transport_cost + self.tax_amount
         super().save(*args, **kwargs)

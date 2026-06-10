@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Expenses | NyondoStock {% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Expenses</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'expense_registration_form' %}" class="btn btn-sm btn-primary d-flex align-items-center gap-1">
+                <i class="bi bi-plus-lg"></i> New Expense
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 ms-2">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Expense Summary Cards -->
+<div class="row row-cols-1 row-cols-md-4 g-4 mb-4">
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted text-uppercase text-xs">Price</h6>
+                <h3 class="card-title mb-0 fw-bold">{{ currency_code }} {{ expense_summary.total_price|default:0|floatformat:0|intcomma }}</h3>
+                <small class="text-muted d-flex align-items-center gap-1 mt-2">
+                    <i class="bi bi-box"></i> Purchase prices
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted text-uppercase text-xs">Transport</h6>
+                <h3 class="card-title mb-0 fw-bold">{{ currency_code }} {{ expense_summary.total_transport|default:0|floatformat:0|intcomma }}</h3>
+                <small class="text-muted d-flex align-items-center gap-1 mt-2">
+                    <i class="bi bi-truck"></i> Transport costs
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted text-uppercase text-xs">Tax</h6>
+                <h3 class="card-title mb-0 fw-bold">{{ currency_code }} {{ expense_summary.total_tax|default:0|floatformat:0|intcomma }}</h3>
+                <small class="text-muted d-flex align-items-center gap-1 mt-2">
+                    <i class="bi bi-percent"></i> Tax amounts
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card h-100 shadow-sm bg-light">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted text-uppercase text-xs fw-bold">Total Expenses</h6>
+                <h3 class="card-title mb-0 fw-bold text-success">{{ currency_code }} {{ expense_summary.total_amount|default:0|floatformat:0|intcomma }}</h3>
+                <small class="text-success d-flex align-items-center gap-1 mt-2">
+                    <i class="bi bi-cash-coin"></i> Overall total
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light py-3">
+        <h5 class="card-title mb-0">Filter Expenses</h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="date_from" class="form-label">Date From</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request.GET.date_from }}">
+            </div>
+            <div class="col-md-4">
+                <label for="date_to" class="form-label">Date To</label>
+                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ request.GET.date_to }}">
+            </div>
+            <div class="col-md-4 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="{% url 'expenses_list' %}" class="btn btn-outline-secondary">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Expenses Table -->
+<div class="card shadow-sm">
+    <div class="card-header bg-light py-3">
+        <h5 class="card-title mb-0">Expense Records ({{ expenses.count }})</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if expenses %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Stock Item</th>
+                            <th scope="col" class="text-end">Price</th>
+                            <th scope="col" class="text-end">Transport</th>
+                            <th scope="col" class="text-end">Tax</th>
+                            <th scope="col" class="text-end">Total</th>
+                            <th scope="col">Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for expense in expenses %}
+                            <tr class="align-middle">
+                                <td>
+                                    <small class="text-muted">{{ expense.date|date:"d M, Y" }}</small>
+                                </td>
+                                <td>
+                                    {% if expense.stock %}
+                                        {{ expense.stock.get_name_display }}
+                                    {% else %}
+                                        <small class="text-muted text-secondary">-</small>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {{ currency_code }} {{ expense.price|floatformat:0|intcomma }}
+                                </td>
+                                <td class="text-end">
+                                    {{ currency_code }} {{ expense.transport_cost|floatformat:0|intcomma }}
+                                </td>
+                                <td class="text-end">
+                                    {{ currency_code }} {{ expense.tax_amount|floatformat:0|intcomma }}
+                                </td>
+                                <td class="text-end fw-bold">
+                                    <span class="badge bg-success">{{ currency_code }} {{ expense.total_amount|floatformat:0|intcomma }}</span>
+                                </td>
+                                <td>
+                                    {% if expense.Comments %}
+                                        <small class="text-muted">{{ expense.Comments|truncatewords:5 }}</small>
+                                    {% else %}
+                                        <small class="text-muted text-secondary">—</small>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="p-4 text-center">
+                <p class="text-muted mb-3">No expenses recorded yet.</p>
+                <a href="{% url 'expense_registration_form' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Record New Expense
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,5 +1,6 @@
 from django import forms
 from .models import Sale, Expense
+from stock.models import Stock
 
 class SaleForm(forms.ModelForm):
     class Meta:
@@ -24,8 +25,12 @@ class SaleForm(forms.ModelForm):
 class ExpenseForm(forms.ModelForm):
     class Meta:
         model = Expense
-        fields = "__all__"
+        fields = ['stock', 'price', 'transport_cost', 'tax_amount', 'total_amount', 'Comments']
         widgets = {
+            'price': forms.NumberInput(attrs={
+                'readonly': 'readonly',
+                'step': '0.01',
+            }),
             'total_amount': forms.NumberInput(attrs={
                 'readonly': 'readonly',
                 'step': '0.01',
@@ -36,3 +41,11 @@ class ExpenseForm(forms.ModelForm):
                 'min_value': 'Total amount cannot be negative.',
             },
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['stock'].queryset = Stock.objects.order_by('name')
+        self.fields['stock'].required = True
+        self.fields['stock'].label = 'Stock item'
+        self.fields['price'].label = 'Purchase price'
+        self.fields['price'].help_text = 'Automatically uses the selected stock item purchase price.'

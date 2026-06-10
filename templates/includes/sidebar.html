@@ -1,7 +1,8 @@
 <!-- Sidebar Start -->
+{% load static %}
 <div class="d-flex flex-column flex-shrink-0 p-4 min-vh-100 sidebar-content">
     <a href="{% url 'dashboard' %}" class="d-flex flex-column align-items-center mb-4 text-decoration-none text-center">
-        <img src="/static/images/nyondo_logo.png" alt="NyondoStock Logo" class="img-fluid rounded-circle mb-3 border border-2 border-white" style="width: 96px; height: 96px; object-fit: cover;">
+        <img src="{% static 'images/nyondo_logo.png' %}" alt="NyondoStock Logo" class="img-fluid rounded-circle mb-3 border border-2 border-white" style="width: 96px; height: 96px; object-fit: cover;">
         <span class="fs-5 fw-bold text-white">NyondoStock</span>
         <span class="text-white-50 small">Hardware Store</span>
     </a>
@@ -27,6 +28,12 @@
             <a href="{% url 'sales_by_stock_report' %}" class="nav-link py-2 px-3 d-flex align-items-center gap-2 {% if request.resolver_match.url_name == 'sales_by_stock_report' %}active bg-primary{% else %}text-white-75{% endif %}">
                 <i class="bi bi-file-earmark-bar-graph fs-5"></i>
                 <span>Sales by Stock</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'expenses_list' %}" class="nav-link py-2 px-3 d-flex align-items-center gap-2 {% if request.resolver_match.url_name in 'expenses_list,expense_registration_form' %}active bg-primary{% else %}text-white-75{% endif %}">
+                <i class="bi bi-cash-coin fs-5"></i>
+                <span>Expenses</span>
             </a>
         </li>
         <li class="nav-item">
